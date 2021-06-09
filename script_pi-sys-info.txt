@@ -1,0 +1,101 @@
+####  From "https://www.raspberrypi.org/forums/viewtopic.php?t=56906"  ####
+
+#!/bin/bash
+
+VERSION="0.5.6"
+# raspberry-pi system information script
+# One script that can tell you the RAM config, serial number, SD card size, 
+# temperature, and codec entitlements. Work-in-progress!
+# Requires bc to for quick calculation. (apt-get install bc on debian)
+# questions and comments to kraptv@sdf.org (or post to the rpi web forum!)
+# ***** This has only been tested on Raspbian wheezy
+
+# check if run as a normal user - if so, exit.
+if [[ $(/usr/bin/id -u) -ne 0 ]]; then
+    echo "$0 not running as root!"
+    exit
+fi
+
+# Annoyingly, users ignore the bc requirement. This should set them straight!
+if [ ! -f /usr/bin/bc ]; then
+    echo -e "ERROR: bc binary is not installed.\nTry running 'apt-get install bc' on most popular RaspberryPi Linux distributions."
+    exit
+fi
+
+# calculate the memory allocated based upon the GPU / system split read from
+# /boot/config.txt (gpu_mem=64) - use vcgencmd because text file contents may be
+# different than actual boot-time memory split allocation!
+sysmem=`/opt/vc/bin/vcgencmd get_mem arm  | sed 's/[A-Za-z]*//g' | cut -c 2-`
+gpumem=`/opt/vc/bin/vcgencmd get_mem gpu  | sed 's/[A-Za-z]*//g' | cut -c 2-`
+totalmem=`expr $sysmem + $gpumem`
+
+# Model A shouldn't have the smsc95xx installed! Return 1 if it's a modelB
+modelB=`lsusb -t | grep -c smsc95xx`
+rpiSerialNum=`grep Serial /proc/cpuinfo | cut -d " " -f 2`
+
+# Reference: http://elinux.org/RPi_HardwareHistory#Board_Revision_History
+# We have alphanumeric CPU revisions. Need to change the greater than logic.
+rpiOverVolt=`grep Revision /proc/cpuinfo | cut -d " " -f 2 | tr -d [A-Z][a-z]`
+
+# Start outputting content with script version
+echo "*** system-info for raspberry-pi $VERSION ***************************************"
+if [ "$modelB" = "1" ]
+then
+  echo "Model B serial $rpiSerialNum detected with $totalmem MB ($sysmem Sys/$gpumem GPU)"
+else
+  echo "Model A serial $rpiSerialNum detected with $totalmem MB installed ($sysmem sys / $gpumem gpu split)"
+fi
+
+# Raw SD card capacity does not translate to usable space! May need resizing!
+# Changed as many users have 4GB and 8GB SD cards and fdisk shows in KBytes
+fdiskOutput=`fdisk -l /dev/mmcblk0 | head -n 2 | tail -n 1 | cut -d \  -f 3,4`
+echo "SD card raw capacity: ${fdiskOutput:0:-1}"
+
+# Check if overvolted and display warning.
+if [ "$rpiOverVolt" -gt "1000" ]
+then
+  echo "WARNING: Overvoltage has been applied to this system at least once!"
+else
+  echo " "
+fi
+
+echo -n "Firmware version: "
+/opt/vc/bin/vcgencmd version | grep -v Broadcom
+echo " "
+tm=`/opt/vc/bin/vcgencmd measure_temp`
+tc=`echo $tm| cut -d '=' -f2 | sed 's/..$//'`
+tf=$(echo "scale=1; (1.8*$tc)+32" | bc)
+echo -e "temp:\t $tf'F ($tc'C)"
+echo " "
+#echo -e "temp:\t $(/opt/vc/bin/vcgencmd measure_temp)" ;
+for src in arm core v3d uart emmc pixel hdmi ; do echo -e "$src:\t $(/opt/vc/bin/vcgencmd measure_clock $src)" ; done
+echo " "
+for id in core sdram_c sdram_p ; do echo -e "$id: $(/opt/vc/bin/vcgencmd measure_volts $id)" ; done
+echo " "
+for codec in MPG2 WVC1 ; do echo -e "$codec:\t $(/opt/vc/bin/vcgencmd codec_enabled $codec)" ; done
+
+---------------THIS WILL OUTPUT--------------------------------------------------------------------
+
+*** system-info for raspberry-pi 0.5.6 ***************************************
+Model B serial 00000000d2e1bc26 detected with 512 MB (448 Sys/64 GPU)
+SD card raw capacity: 63.9 GB
+ 
+Firmware version: Nov 15 2013 14:17:01 
+version 162026b1448f491e97e3b3b57cdca29be6a1d61a (tainted) (release)
+ 
+temp:	 116.7'F (47.1'C)
+ 
+arm:	 frequency(45)=900000000
+core:	 frequency(1)=250000000
+v3d:	 frequency(43)=250000000
+uart:	 frequency(22)=3000000
+emmc:	 frequency(47)=249999000
+pixel:	 frequency(29)=148500000
+hdmi:	 frequency(9)=163683000
+ 
+core: volt=1.25V
+sdram_c: volt=1.20V
+sdram_p: volt=1.23V
+ 
+MPG2:	 MPG2=disabled
+WVC1:	 WVC1=disabled

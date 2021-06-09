@@ -1,0 +1,7 @@
+# Cron scripts are stored at /home/pi/.config/cronscripts
+#
+# After creating script, (from /home/pi/scripts/)
+# 1.  chmod to rwx "chmod u+rwx,g+rwx,o+r [filename]"
+# 2.  then,  "sudo ln -s [FULL file path] [/bin/]"
+# 3.  then, "sudo mv [filename] [filename to type into terminal]
+

@@ -1,0 +1,3 @@
+#!/bin/bash
+# lists all packages in database
+dpkg -l

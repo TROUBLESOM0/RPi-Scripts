@@ -1,0 +1,4 @@
+#!/bin/bash
+#
+# lists current IP ADDRESS
+hostname -I
