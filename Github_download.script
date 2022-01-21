@@ -9,7 +9,7 @@ case $input in
 [yY][eE]{sS]|[yY])
 echo "Downloading"
 sleep 2s
-wget "https://github.com/TROUBLESOM0/RPi-Scripts/raw/Download/Raspberry Pi Scripts.zip"
+wget "https://github.com/TROUBLESOM0/RPi-Scripts/archive/refs/heads/Scripts.zip"
 break
 ;;
 [nN][oO]|[nN])
