@@ -1,0 +1,27 @@
+#!/bin/bash
+# Command to download Raspberry Pi Scripts package
+#
+dir=`pwd`
+echo "Downloads Raspberry Pi Scripts zip into current folder : '$dir'"
+while true
+do
+read -r -p "Ready to download? [Y/n]" input
+case $input in
+[yY][eE]{sS]|[yY])
+echo "Downloading"
+sleep 2s
+wget "https://github.com/TROUBLESOM0/RPi-Scripts/archive/refs/heads/Scripts.zip"
+sleep 1s
+echo -e "Download complete\nScripts.zip downloaded to '$dir'"
+break
+;;
+[nN][oO]|[nN])
+echo "Cancelled"
+break
+;;
+*)  #anything else
+echo "invalid input... Must select Y/N"
+;;  #loops read
+esac
+done
+
