@@ -1,27 +1,47 @@
 #!/bin/bash
 # Command to download Raspberry Pi Scripts package
 #
-dir=`pwd`
-echo "Downloads Raspberry Pi Scripts zip into current folder : '$dir'"
+### sets sleep functions ###
+s () { sleep .5; }
+s1 () { sleep 1; }
+s2 () { sleep 2; )
+############################
+### function to download Scripts.zip file ###
+ask_DL () {
 while true
 do
-read -r -p "Ready to download? [Y/n]" input
-case $input in
-[yY][eE]{sS]|[yY])
-echo "Downloading"
-sleep 2s
+read -r -p "Ready to download? [Y/n]" dl_input
+case $dl_input in
+[yY][eE][sS]|[yY])
+echo "Downloading Scripts.zip"
+s2
 wget "https://github.com/TROUBLESOM0/RPi-Scripts/archive/refs/heads/Scripts.zip"
-sleep 1s
-echo -e "Download complete\nScripts.zip downloaded to '$dir'"
+s1
+if test -f Scripts.zip
+then echo "Download successful"
+else echo "Error downloading"
+fi
 break
 ;;
 [nN][oO]|[nN])
-echo "Cancelled"
+echo "Download Cancelled"
 break
 ;;
-*)  #anything else
-echo "invalid input... Must select Y/N"
-;;  #loops read
+*)
+echo "Must enter [Y/n]"
+s
+;;
 esac
 done
+}
+#############################################
+dir=`pwd`
+echo "Downloads Raspberry Pi Scripts zip into current folder : '$dir'"
+if test -f Scripts.zip
+then echo "Scripts.zip file already exists"
+else ask_DL
 
+if test -f Scripts.zip
+then echo "Download complete again"
+else echo "Error downloading again"
+fi
