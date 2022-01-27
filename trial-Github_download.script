@@ -4,9 +4,49 @@
 ### sets sleep functions ###
 s () { sleep .5; }
 s1 () { sleep 1; }
-s2 () { sleep 2; )
-############################
-### function to download Scripts.zip file ###
+s2 () { sleep 2; }
+s3 () { sleep 3; }
+s4 () { sleep 4; }
+s5 () { sleep 5; }
+#############################################
+### function for current date ###
+currentDate=$(date "+%m-%d-%Y")
+repeatDate=$(date "+%m-%d-%Y.%T")
+#
+#############################################
+### UNZIP Scripts.zip ###
+#############################################
+ask_Unzip () {
+if test -d RPi-Scripts-Scripts
+then mv RPi-Scripts-Scripts/ bkup_RPi-Scripts-Scripts.$repeatDate/
+else echo "Do Nothing"
+fi
+while test -f Scripts.zip
+do
+unzip -o Scripts.zip
+if test -d RPi-Scripts-Scripts
+then read -r -p "Scripts unzipped. Do you want to delete the .zip file?" del_zip
+case $del_zip in
+[yY][eE][sS]|[yY])
+rm Scripts.zip
+echo "END"
+break
+;;
+[nN][oO]|[nN])
+echo "END"
+break
+;;
+*)
+echo "Must enter [Y/n]"
+s
+;;
+esac
+fi
+done
+}
+############################################
+### DOWNLOAD Scripts.zip ###
+############################################
 ask_DL () {
 while true
 do
@@ -14,11 +54,13 @@ read -r -p "Ready to download? [Y/n]" dl_input
 case $dl_input in
 [yY][eE][sS]|[yY])
 echo "Downloading Scripts.zip"
-s2
+s3
 wget "https://github.com/TROUBLESOM0/RPi-Scripts/archive/refs/heads/Scripts.zip"
+#wget "http://10.10.10.5:8000/Scripts.zip"
 s1
 if test -f Scripts.zip
 then echo "Download successful"
+ask_Unzip
 else echo "Error downloading"
 fi
 break
@@ -35,13 +77,53 @@ esac
 done
 }
 #############################################
+### REPLACE Scripts.zip ###
+#############################################
+ask_Replace () {
+while true
+do
+read -r -p "Do you want to replace Scripts.zip?" rep_input
+case $rep_input in
+[yY][eE][sS]|[yY])
+echo "Backing up Scripts.zip"
+echo $currentDate
+if test -f bkup_Scripts-$currentDate.zip
+then cp Scripts.zip bkup_Scripts-$repeatDate.zip
+else cp Scripts.zip bkup_Scripts-$currentDate.zip
+fi
+rm Scripts.zip
+s3
+echo "Downloading Scripts"
+wget "https://github.com/TROUBLESOM0/RPi-Scripts/archive/refs/heads/Scripts.zip"
+#wget "http://10.10.10.5:8000/Scripts"
+s1
+if test -f Scripts.zip
+then echo "Download successful."
+ask_Unzip
+else echo "Error Downloading"
+fi
+break
+;;
+[nN][oO]|[nN])
+echo "END"
+break
+;;
+*)
+echo "Must enter [Y/n]"
+s
+;;
+esac
+done
+}
+#############################################
+#
 dir=`pwd`
 echo "Downloads Raspberry Pi Scripts zip into current folder : '$dir'"
 if test -f Scripts.zip
-then echo "Scripts.zip file already exists"
+then  echo "Scripts.zip file already exists"
+s1
+ask_Replace
 else ask_DL
-
-if test -f Scripts.zip
-then echo "Download complete again"
-else echo "Error downloading again"
 fi
+
+echo "Last Line - ENDING"
