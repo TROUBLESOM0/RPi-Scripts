@@ -1,0 +1,105 @@
+#!/bin/bash
+dir=`pwd`
+### Sets sleep functions
+s () { sleep .5; }
+s1 () { sleep 1; }
+echo "Current directory is:  '$dir'"
+s
+###
+#
+### Sets function to replace blank.txt file
+replace_blank () {
+while true
+do
+read -r -p "Do you want to replace blank.txt file?" new_input
+case $new_input in
+[yY][eE][sS]|[yY])
+touch blank.txt
+s
+break
+;;
+[nN][oO]|[Nn])
+echo "OK. not replacing blank.txt"
+s
+break
+;;
+*)
+echo "Must enter Y/N"
+s
+;;
+esac
+done
+}
+###
+#
+### Look for blank.txt file in current directory
+### If found, asks to create a new blank.txt
+if test -f blank.txt
+then echo "blank.txt found in dir"
+replace_blank
+### End of first query for blank.txt file
+### Asks to create initial blank.txt file
+else echo "blank.txt not found.. End replace_blank()"
+while true
+do
+read -r -p "Do you want to create a 'blank.txt' file?" in_input
+case $in_input in
+[yY][eE][sS]|[yY])
+touch blank.txt
+s
+break
+;;
+[nN]]oO]|[nN])
+echo "OK. Not creating blank.txt"
+s
+break
+;;
+*)
+echo "Must enter Y/N"
+s
+;;
+esac
+done
+fi
+### this needs to go after answer YES on creating file to verify
+### file was created
+if [[ -f blank.txt ]]
+then echo "blank.txt created in $dir"
+s1
+else echo "blank.txt not created"
+s1
+fi
+
+if [[ -f $dir/blank.txt ]]
+then echo -e "file 'blank.txt' found in $dir \nOpen to see file"
+else echo "blank.txt not found in $dir .... again"
+s1
+fi
+
+while true
+do
+s
+read -r -p "Ready to create Blank2.txt ?" input
+case $input in
+[yY][eE][sS]|[yY])
+touch Blank2.txt
+s
+if test -f Blank2.txt;
+then echo "File Blank2 found"
+else echo "File Blank2 missing"
+fi
+break
+;;
+[nN][oO]|[nN])
+echo "Okay. not creating blank2"
+break
+;;
+*)
+echo "You didn't answer yes or no"
+;;
+esac
+done
+#if [[ -f Blank2.txt ]]
+#then
+#echo "File created at $dir"
+#fi
