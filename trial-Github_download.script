@@ -1,6 +1,23 @@
 #!/bin/bash
+#
+# ISSUE AT LINE 80
+#
 # Command to download Raspberry Pi Scripts package
 #
+### Scripts to Install ###
+# a-i
+# when adding more, must update /COPY scripts/ function
+a=activeservices.list
+b=allpackages.list
+c=allservices.list
+d=hostip.list
+e=makewebserver
+f=matrix.sh
+g=systemctlenabled.list
+h=temp.sh
+i=usergrp.list
+#
+#############################################
 ### sets sleep functions ###
 s () { sleep .5; }
 s1 () { sleep 1; }
@@ -8,44 +25,79 @@ s2 () { sleep 2; }
 s3 () { sleep 3; }
 s4 () { sleep 4; }
 s5 () { sleep 5; }
+#
 #############################################
-### function for current date ###
+### variables for current date ###
 currentDate=$(date "+%m-%d-%Y")
 repeatDate=$(date "+%m-%d-%Y.%T")
 #
 #############################################
-### UNZIP Scripts.zip ###
+### variables for files/directories ###
+dir=`pwd`
+scripts=~/scripts
+bin=/bin/
+gitDir="RPi-Scripts-Scripts"
+gitDL="Scripts.zip"
+gitLink="https://github.com/TROUBLESOM0/RPi-Scripts/archive/refs/heads/Scripts.zip"
+#gitLink="http://10.10.10.5:8000/Scripts.zip"
+#
+#############################################
+###            repeat characters          ###
+function char_repeat() {
+count="$1"
+char="$2"
+for (( i=0; i < $count; ++i ))
+do printf "$char"
+done
+echo
+}
+#
+#############################################
+###                 UNZIP                 ###
 #############################################
 ask_Unzip () {
-if test -d RPi-Scripts-Scripts
-then mv RPi-Scripts-Scripts/ bkup_RPi-Scripts-Scripts.$repeatDate/
+if test -d $gitDir
+then mv $gitDir/ bkup_$gitDir.$repeatDate/
 else echo "Do Nothing"
 fi
-while test -f Scripts.zip
+if test -f $gitDL
+then
+unzip -o $gitDL
+else echo "ERROR: $gitDL doesn't exist."
+fi
+#if
+while test -d $gitDir
+#then
 do
-unzip -o Scripts.zip
-if test -d RPi-Scripts-Scripts
-then read -r -p "Scripts unzipped. Do you want to delete the .zip file?" del_zip
+read -r -p "Scripts unzipped. Do you want to delete the .zip file?" del_zip
 case $del_zip in
 [yY][eE][sS]|[yY])
-rm Scripts.zip
-echo "END"
+rm $gitDL
+echo "Scripts.zip deleted"
+s3
+cp_Scripts
 break
 ;;
 [nN][oO]|[nN])
-echo "END"
-break
+echo "Keeping Scripts.zip"
+cp_Scripts
+######################there is an issue wtih this break "only allowed in for,while,unitl loops
+## also script files are always missing
+#################################################################################################
+break ##########################################################################################
+###########################################################################################
 ;;
 *)
 echo "Must enter [Y/n]"
 s
 ;;
 esac
-fi
+#else echo "!!!!!ERROR: $gitDir doesn't exist.!!!!!"
 done
+#fi
 }
 ############################################
-### DOWNLOAD Scripts.zip ###
+###               DOWNLOAD               ###
 ############################################
 ask_DL () {
 while true
@@ -53,13 +105,13 @@ do
 read -r -p "Ready to download? [Y/n]" dl_input
 case $dl_input in
 [yY][eE][sS]|[yY])
-echo "Downloading Scripts.zip"
+echo "Downloading $gitDL"
 s3
-wget "https://github.com/TROUBLESOM0/RPi-Scripts/archive/refs/heads/Scripts.zip"
-#wget "http://10.10.10.5:8000/Scripts.zip"
+wget $gitLink
 s1
-if test -f Scripts.zip
+if test -f $gitDL
 then echo "Download successful"
+char_repeat 25 "-"
 ask_Unzip
 else echo "Error downloading"
 fi
@@ -77,28 +129,29 @@ esac
 done
 }
 #############################################
-### REPLACE Scripts.zip ###
+###                REPLACE                ###
 #############################################
 ask_Replace () {
 while true
 do
-read -r -p "Do you want to replace Scripts.zip?" rep_input
+read -r -p "Do you want to replace $gitDL?" rep_input
 case $rep_input in
 [yY][eE][sS]|[yY])
-echo "Backing up Scripts.zip"
+echo "Backing up $gitDL"
 echo $currentDate
 if test -f bkup_Scripts-$currentDate.zip
-then cp Scripts.zip bkup_Scripts-$repeatDate.zip
-else cp Scripts.zip bkup_Scripts-$currentDate.zip
+then cp $gitDL bkup_Scripts-$repeatDate.zip
+else cp $gitDL bkup_Scripts-$currentDate.zip
 fi
-rm Scripts.zip
+rm $gitDL
 s3
 echo "Downloading Scripts"
-wget "https://github.com/TROUBLESOM0/RPi-Scripts/archive/refs/heads/Scripts.zip"
+wget $gitLink
 #wget "http://10.10.10.5:8000/Scripts"
 s1
-if test -f Scripts.zip
+if test -f $gitDL
 then echo "Download successful."
+char_repeat 25 "-"
 ask_Unzip
 else echo "Error Downloading"
 fi
@@ -115,15 +168,82 @@ s
 esac
 done
 }
+
 #############################################
+###                 COPY                  ###
+#############################################
+cp_Scripts () {
+if [[ ! -d $scripts ]]
+then mkdir $scripts
+echo "scripts dir created"
+else echo "$scripts exists"
+cp -r $scripts $dir/bkup_scripts-$repeatDate
+echo "'$scripts' backed up in '$dir'"
+fi
+
+#if test -d $gitDir
+#then echo "Checking if files are present....."
+cd $gitDir
+echo "... in $gitDir"
+#-----------------------
+#troublshooting file read
+listfiles=`ls`
+echo "$listfiles"
+#------------------------
+#if [[ -f $a && -f $b && -f $c && -f $d && -f $e && -f $f && -f $g && -f $h && -f $i ]]
+if [[ -f $a && -f $b && -f $c && -f $d && -f $e && -f $f && -f $g && -f $h && -f $i ]]
+
+#if [[ -f $a ]]
+then echo "All script files present. Ready to install scripts"
+####INSTALL SCRIPTS HERE
+#install_Scripts
+echo "THIS IS WHERE YOU'LL INSTALL THE SCRIPTS"
+else echo "Missing script files in $dir/$gitDir"
+fi
+#else "$gitDir missing"
+#fi
+}
+#############################################
+###                INSTALL                ###
+#############################################
+#!/bin/bash
 #
-dir=`pwd`
+# installs from inside /scripts/ folder
+#
+# activeservices,
+# allpackages,
+# allservices,
+# hostip,
+# matrix,
+# makewebserver
+# systemctlenabled,
+# temp,
+# usergrp,
+#
+#
+install_Scripts () {
+echo "This will set permissions and install (x9) scripts in /bin/"
+s1
+echo "$a\n $b\n $c\n $d\n $e\n $f\n $g\n $h\n $i\n "
+echo "----------------------------------------------------"
+s2
+
+sudo chmod u+rwx,g+rwx,o+r $a $b $c $d $e $f $g $h $i
+sudo ln -s ~/scripts/$a /bin/activeservices && sudo ln -s ~/scripts/$b /bin/allpackages && sudo ln -s ~/scripts/$c /bin/allservices && sudo ln -s ~/scripts/$d /bin/hostip && sudo ln -s ~/scripts/$e /bin/matrix && sudo ln -s ~/scripts/$f /bin/makewebserver && sudo ln -s ~/scripts/$g /bin/systemctlenabled && sudo ln -s ~/scripts/$h /bin/temp && sudo ln -s ~/scripts/$i /bin/usergrp
+echo "All scripts installed"
+}
+
+
+#############################################
+#############################################
 echo "Downloads Raspberry Pi Scripts zip into current folder : '$dir'"
-if test -f Scripts.zip
-then  echo "Scripts.zip file already exists"
+echo $dir/$gitDir
+if test -f $gitDL
+then echo "$gitDL file already exists"
 s1
 ask_Replace
 else ask_DL
 fi
 
 echo "Last Line - ENDING"
+#########################################
