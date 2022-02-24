@@ -182,16 +182,17 @@ echo "'$scripts' backed up in '$dir'"
 fi
 
 #if test -d $gitDir
-#then echo "Checking if files are present....."
-cd $gitDir
-echo "... in $gitDir"
+echo "Checking if files are present....."
+sleep 3
+#cd $gitDir
+#echo "... in $gitDir"
 #-----------------------
 #troublshooting file read
-listfiles=`ls`
-echo "$listfiles"
+#listfiles=`ls`
+#echo "$listfiles"
 #------------------------
+cd $dir$gitdir && if [[ -f $a && -f $b && -f $c && -f $d && -f $e && -f $f && -f $g && -f $h ]]
 #if [[ -f $a && -f $b && -f $c && -f $d && -f $e && -f $f && -f $g && -f $h && -f $i ]]
-if [[ -f $a && -f $b && -f $c && -f $d && -f $e && -f $f && -f $g && -f $h && -f $i ]]
 
 #if [[ -f $a ]]
 then echo "All script files present. Ready to install scripts"
