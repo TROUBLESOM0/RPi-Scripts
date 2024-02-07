@@ -38,8 +38,8 @@ scripts=~/scripts
 bin=/bin/
 gitDir="RPi-Scripts-Scripts"
 gitDL="Scripts.zip"
-#gitLink="https://github.com/TROUBLESOM0/RPi-Scripts/archive/refs/heads/Scripts.zip"
-gitLink=~/Public/Scripts.zip
+gitLink="https://github.com/TROUBLESOM0/RPi-Scripts/archive/refs/heads/Scripts.zip"
+# #FOR TESTING ONLY# gitLink=~/Public/Scripts.zip
 #
 #############################################
 ###            repeat characters          ###
@@ -73,7 +73,7 @@ read -r -p "Scripts unzipped. Do you want to delete the .zip file?" del_zip
 case $del_zip in
 [yY][eE][sS]|[yY])
 rm $gitDL
-echo "Scripts.zip deleted"
+echo "Deleted Scripts.zip"
 s3
 cp_Scripts
 break
@@ -107,8 +107,8 @@ case $dl_input in
 [yY][eE][sS]|[yY])
 echo "Downloading $gitDL"
 s3
-#wget $gitLink
-cp $gitLink $dir
+wget $gitLink
+# #FOR TESTING ONLY# cp $gitLink $dir
 s1
 if test -f $gitDL
 then echo "Download successful"
