@@ -37,6 +37,7 @@ dir=`pwd`
 scripts=~/scripts
 bin=/bin/
 gitDir="RPi-Scripts-Scripts"
+scriptsDir="RPI-Scripts"
 gitDL="Scripts.zip"
 gitLink="https://github.com/TROUBLESOM0/RPi-Scripts/archive/refs/heads/Scripts.zip"
 # #FOR TESTING ONLY# gitLink=~/Public/Scripts.zip
@@ -55,27 +56,37 @@ echo
 }
 #
 #############################################
+###              delay dots               ###
+function dot_delay() {
+for (( i=0; i <10; ++i ))
+do printf "."
+  sleep .1
+done
+echo
+}
+#
+#############################################
 ###                 UNZIP                 ###
 #############################################
 ask_Unzip () {
-if test -d $gitDir
-then mv $gitDir/ bkup_$gitDir.$repeatDate/
-else echo "Do Nothing"
+if test -d $scriptsDir
+then mv $scriptsDir/ bkup_$gitDir.$repeatDate/
+else echo "'$scriptsDir' doesn't exist... Unzipping '$gitDL' to '$scriptsDir'"
 fi
 if test -f $gitDL
 then
-unzip -o $gitDL
+unzip -o $gitDL && mv $gitDir $scriptsDir
 else echo "ERROR: $gitDL doesn't exist."
 fi
 #if
 while test -d $gitDir
 #then
 do
-read -r -p "Scripts unzipped. Do you want to delete the .zip file?" del_zip
+read -r -p "'gitDL' unzipped. Do you want to delete the .zip file?" del_zip
 case $del_zip in
 [yY][eE][sS]|[yY])
 rm $gitDL
-echo "Deleted Scripts.zip"
+echo "Deleted '$gitDL'"
 s3
 cp_Scripts
 break
@@ -109,11 +120,12 @@ case $dl_input in
 [yY][eE][sS]|[yY])
 echo "Downloading $gitDL"
 s3
-wget $gitLink
+wget -q $gitLink
 # #FOR TESTING ONLY# cp $gitLink $dir
 s1
 if test -f $gitDL
-then echo "Download successful"
+then char_repeat 25 "-"
+echo "Download successful"
 char_repeat 25 "-"
 ask_Unzip
 else echo "Error downloading"
@@ -178,8 +190,8 @@ done
 cp_Scripts () {
 if [[ ! -d $scripts ]]
 then mkdir $scripts
-echo "scripts dir created"
-else echo "$scripts exists"
+echo "scripts dir didn't exist so was created at '$scripts'"
+else echo "$scripts exists... creating backup"
 cp -r $scripts $dir/bkup_scripts-$repeatDate
 echo "'$scripts' backed up in '$dir'"
 fi
@@ -191,19 +203,17 @@ sleep 3
 #echo "... in $gitDir"
 #-----------------------
 #troublshooting file read
-cd $gitDir
+cd $scriptsDir
 #listfiles=`ls`
 #echo "$listfiles"
 #------------------------
 #cd $dir$gitdir && if [[ -f $a && -f $b && -f $c && -f $d && -f $e && -f $f && -f $g && -f $h ]]
 if [[ -f $a && -f $b && -f $c && -f $d && -f $e && -f $f && -f $g && -f $h ]]
 then echo "All script files present. Ready to install scripts"
-echo "Moving files to $scripts"
+echo "Moving files to '$scripts'"
 mv $a $b $c $d $e $f $g $h $scripts
-s1
-
-
-
+echo "Files moved to '$scripts'"
+s5
 #if [[ -f $a ]]
 #then echo "$a is present"
 ####INSTALL SCRIPTS HERE
@@ -251,7 +261,6 @@ echo "All scripts installed"
 #############################################
 #############################################
 echo "Downloads Raspberry Pi Scripts zip into current folder : '$dir'"
-echo $dir/$gitDir
 if test -f $gitDL
 then echo "$gitDL file already exists"
 s1
