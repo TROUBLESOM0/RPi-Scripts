@@ -43,6 +43,8 @@ gitLink="https://github.com/TROUBLESOM0/RPi-Scripts/archive/refs/heads/Scripts.z
 #
 #############################################
 ###            repeat characters          ###
+# example: char_repeat 25 "-"
+# repeats "-" 25 times
 function char_repeat() {
 count="$1"
 char="$2"
