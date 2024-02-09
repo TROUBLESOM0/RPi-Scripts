@@ -1,23 +1,375 @@
 #!/bin/bash
+#
+# ISSUE AT LINE 80
+#
 # Command to download Raspberry Pi Scripts package
 #
-echo "Downloads Raspberry Pi Scripts zip into current folder"
-while true
+### Scripts to Install ###
+# a-j  [NOTE: CAN'T USE "i"]
+# when adding more, must update /COPY scripts/ function
+a=activeservices.list
+b=allpackages.list
+c=allservices.list
+d=hostip.list
+e=makewebserver
+f=matrix.sh
+g=systemctlenabled.list
+h=temp.sh
+j=usergrp.list
+#
+# this is what you want to call it in /bin/
+a1=activeservices
+b1=allpackages
+c1=allservices
+d1=hostip
+e1=makewebserver
+f1=matrix
+g1=systemctlenabled
+h1=temp
+j1=usergrp
+#############################################
+### sets sleep functions ###
+s () { sleep .5; }
+s1 () { sleep 1; }
+s2 () { sleep 2; }
+s3 () { sleep 3; }
+s4 () { sleep 4; }
+s5 () { sleep 5; }
+#
+#############################################
+### variables for current date ###
+currentDate=$(date "+%m-%d-%Y")
+repeatDate=$(date "+%m-%d-%Y.%T")
+#
+#############################################
+### variables for files/directories ###
+dir=`pwd`
+scripts=~/scripts
+bin=/bin/
+gitDir="RPi-Scripts-Scripts"
+scriptsDir="RPI-Scripts"
+gitDL="Scripts.zip"
+gitLink="https://github.com/TROUBLESOM0/RPi-Scripts/archive/refs/heads/Scripts.zip"
+# #FOR TESTING ONLY# gitLink=~/Public/Scripts.zip
+#
+#############################################
+###            repeat characters          ###
+# example: char_repeat 25 "-"
+# repeats "-" 25 times
+function char_repeat() {
+count="$1"
+char="$2"
+for (( i=0; i < $count; ++i ))
+do printf "$char"
+done
+echo
+}
+#
+#############################################
+###              delay dots               ###
+function dot_delay() {
+for (( i=0; i < 25; ++i ))
+do printf "."
+  sleep .1
+done
+echo
+}
+# 
+#############################################
+###                 UNZIP                 ###
+#############################################
+ask_Unzip () {
+if test -d $scriptsDir
+then mv $scriptsDir/ bkup_$scriptsDir.$repeatDate/
+else echo "'$scriptsDir' doesn't exist... Unzipping '$gitDL'"
+dot_delay
+fi
+if test -f $gitDL
+then
+unzip -qq -o $gitDL && mv $gitDir $scriptsDir
+echo "Scripts unzipped to '$scriptsDir'."
+s
+else echo "ERROR: $gitDL doesn't exist."
+fi
+while test -d $scriptsDir
 do
-read -r -p "Ready to download? [Y/n]" input
-case $input in
-[yY][eE]{sS]|[yY])
-echo "Downloading"
-sleep 2s
-wget "https://github.com/TROUBLESOM0/RPi-Scripts/archive/refs/heads/Scripts.zip"
+read -r -p "Do you want to delete the .zip file?" del_zip
+case $del_zip in
+[yY][eE][sS]|[yY])
+rm $gitDL
+s1
+echo "Deleted Scripts.zip"
+s3
+cp_Scripts
 break
 ;;
 [nN][oO]|[nN])
-echo "Cancelled"
+echo "Keeping Scripts.zip"
+cp_Scripts
 break
 ;;
-*)  #anything else
-echo "invalid input... Must select Y/N"
-;;  #loops read
+*)
+echo "Must enter [Y/n]"
+s
+;;
 esac
 done
+}
+############################################
+###               DOWNLOAD               ###
+############################################
+ask_DL () {
+while true
+do
+read -r -p "Ready to download? [Y/n]" dl_input
+case $dl_input in
+[yY][eE][sS]|[yY])
+echo "Downloading $gitDL"
+s1
+wget -q $gitLink
+# #FOR TESTING ONLY# cp $gitLink $dir
+s1
+if test -f $gitDL
+then char_repeat 25 "-"
+echo "Download successful"
+char_repeat 25 "-"
+ask_Unzip
+else echo "Error downloading"
+fi
+break
+;;
+[nN][oO]|[nN])
+echo "Download Cancelled"
+break
+;;
+*)
+echo "Must enter [Y/n]"
+s
+;;
+esac
+done
+}
+#############################################
+###                REPLACE                ###
+#############################################
+ask_Replace () {
+while true
+do
+read -r -p "Do you want to replace $gitDL?" rep_input
+case $rep_input in
+[yY][eE][sS]|[yY])
+echo "Backing up $gitDL"
+echo $currentDate
+if test -f bkup_Scripts-$currentDate.zip
+then cp $gitDL bkup_Scripts-$repeatDate.zip
+else cp $gitDL bkup_Scripts-$currentDate.zip
+fi
+rm $gitDL
+s3
+echo "Downloading Scripts"
+wget -q $gitLink
+#wget "http://10.10.10.5:8000/Scripts"
+s1
+if test -f $gitDL
+then char_repeat 25 "-"
+echo "Download successful."
+char_repeat 25 "-"
+ask_Unzip
+else echo "Error Downloading"
+fi
+break
+;;
+[nN][oO]|[nN])
+echo "END"
+break
+;;
+*)
+echo "Must enter [Y/n]"
+s
+;;
+esac
+done
+}
+
+#############################################
+###                 COPY                  ###
+#############################################
+cp_Scripts () {
+if [[ ! -d $scripts ]]
+then mkdir $scripts
+echo "scripts dir didn't exist so was created at '$scripts'"
+s5
+dot_delay
+else echo "$scripts exists... creating backup"
+cp -r $scripts $dir/bkup_scripts-$repeatDate
+s5
+dot_delay
+echo "'$scripts' backed up to '$dir/bkup-scripts-$repeatDate'"
+fi
+echo "Checking if files are present in '$dir/$scriptsDir'"
+sleep 5
+dot_delay
+#cd $scriptsDir
+if [[ -f $dir/$scriptsDir/$a ]]
+then echo "$a"
+else echo "'$a' missing"
+fi
+if [[ -f $dir/$scriptsDir/$b ]]
+then echo "$b"
+else echo "'$b' missing"
+fi
+if [[ -f $dir/$scriptsDir/$c ]]
+then echo "$c"
+else echo "'$c' missing"
+fi
+if [[ -f $dir/$scriptsDir/$d ]]
+then echo "$d"
+else echo "'$d' missing"
+fi
+if [[ -f $dir/$scriptsDir/$e ]]
+then echo "$e"
+else echo "'$e' missing"
+fi
+if [[ -f $dir/$scriptsDir/$f ]]
+then echo "$f"
+else echo "'$f' missing"
+fi
+if [[ -f $dir/$scriptsDir/$g ]]
+then echo "$g"
+else echo "'$g' missing"
+fi
+if [[ -f $dir/$scriptsDir/$h ]]
+then echo "$h"
+else echo "'$h' missing"
+fi
+if [[ -f $dir/$scriptsDir/$j ]]
+then echo "$j"
+else echo "'$j' missing"
+fi
+char_repeat 20 "-"
+if [[ -f $dir/$scriptsDir/$a && -f $dir/$scriptsDir/$b && -f $dir/$scriptsDir/$c && -f $dir/$scriptsDir/$d && -f $dir/$scriptsDir/$e && -f $dir/$scriptsDir/$f && -f $dir/$scriptsDir/$g && -f $dir/$scriptsDir/$h && -f $dir/$scriptsDir/$j ]]
+then echo "All script files present. Ready to install scripts"
+echo "Moving files to '$scripts'"
+cd $dir/$scriptsDir && mv $a $b $c $d $e $f $g $h $j $scripts
+s1
+dot_delay
+install_Scripts
+else echo "Missing script files in $dir/$scriptsDir"
+s5
+fi
+}
+#############################################
+###                INSTALL                ###
+#############################################
+#!/bin/bash
+#
+# installs from inside /scripts/ folder
+#
+# activeservices,
+# allpackages,
+# allservices,
+# hostip,
+# matrix,
+# makewebserver
+# systemctlenabled,
+# temp,
+# usergrp,
+#
+#
+install_Scripts () {
+echo "This will set permissions and install "
+s2
+### MOVING INTO ~/scripts
+#list=`ls -1`
+char_repeat 25 "."
+(cd $scripts; ls -1)
+dot_delay
+echo " scripts into '$bin'"
+dot_delay
+s5
+echo "Setting permissions and installing into '$bin'"
+s1
+chmod u+rwx,g+rwx,o+r $scripts/$a
+chmod u+rwx,g+rwx,o+r $scripts/$a $scripts/$b $scripts/$c $scripts/$d $scripts/$e $scripts/$f $scripts/$g $scripts/$h $scripts/$j
+if [[ -f $bin$a1 ]]
+then echo "Replacing '$bin/$a1'"
+sudo rm $bin$a1
+echo "removed '$a1'"
+else dot_delay
+fi
+
+if [[ -f $bin$b1 ]]
+then echo "Replacing '$bin/$b1'"
+sudo rm $bin$b1
+echo "removed '$b1'"
+else dot_delay
+fi
+
+if [[ -f $bin$c1 ]]
+then echo "Replacing '$bin/$c1'"
+sudo rm $bin$c1
+echo "removed '$c1'"
+else dot_delay
+fi
+
+if [[ -f $bin$d1 ]]
+then echo "Replacing '$bin/$d1'"
+sudo rm $bin$d1
+echo "removed '$d1'"
+else dot_delay
+fi
+
+if [[ -f $bin$e1 ]]
+then echo "Replacing '$bin/$e1'"
+sudo rm $bin$e1
+echo "removed '$e1'"
+else dot_delay
+fi
+
+if [[ -f $bin$f1 ]]
+then echo "Replacing '$bin/$f1'"
+sudo rm $bin$f1
+echo "removed '$f1'"
+else dot_delay
+fi
+
+if [[ -f $bin$g1 ]]
+then echo "Replacing '$bin/$g1'"
+sudo rm $bin$g1
+echo "removed '$g1'"
+else dot_delay
+fi
+
+if [[ -f $bin$h1 ]]
+then echo "Replacing '$bin/$h1'"
+sudo rm $bin$h1
+echo "removed '$h1'"
+else dot_delay
+fi
+
+if [[ -f $bin$j1 ]]
+then echo "Replacing '$bin/$j1'"
+sudo rm $bin$j1
+echo "removed '$j1'"
+else dot_delay
+fi
+
+echo "Linking......."
+sudo ln -s $scripts/$a $bin$a1 && sudo ln -s $scripts/$b $bin$b1 && sudo ln -s $scripts/$c $bin$c1 && sudo ln -s $scripts/$d $bin$d1 && sudo ln -s $scripts/$e $bin$e1 && sudo ln -s $scripts/$f $bin$f1 && sudo ln -s $scripts/$g $bin$g1 && sudo ln -s $scripts/$h $bin$h1 && sudo ln -s $scripts/$j $bin$j1
+dot_delay & dot_delay & dot_delay
+echo "Linking Complete"
+echo "All scripts installed"
+}
+
+#############################################
+#############################################
+echo "Downloads Raspberry Pi Scripts zip into current folder : '$dir'"
+if test -f $gitDL
+then echo "$gitDL file already exists"
+s1
+ask_Replace
+else ask_DL
+fi
+
+echo "ENDING"
+#########################################
