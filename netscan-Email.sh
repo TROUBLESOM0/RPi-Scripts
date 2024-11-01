@@ -14,6 +14,7 @@ _T=$(date +"%H:%M")
 ## get SSID w/ (iwgetid)
 _host=$(hostip)
 _ssID=$(iwgetid | cut --complement -d' ' -f1)
+_allssID=$(sudo iwlist wlan0 scan | grep ESSID)
 #########################################################
 ## scan for active ip addresses on network w/ (nmap)   ##
 ## and output results to ipList_datetime               ##
@@ -21,9 +22,12 @@ _ssID=$(iwgetid | cut --complement -d' ' -f1)
 _lanIP=$(hostip | grep LOCAL | cut -d' ' -f 3)
 #_lanIP=$(hostname -I)
 nmap -sn $_lanIP/24 | awk '/Nmap scan/{gsub(/[()]/,"",$NF); print $NF > "gsubList"}'
-sudo nmap -sP $_lanIP/24 | grep 'MAC\|scan report' > ipList_$_D_$_T
+sudo nmap -sP $_lanIP/24 > ipList
+cat ipList | grep 'MAC\|scan report' > ipList_$_D_$_T
+cat ipList | awk '1==1 {res=gsub("\r","")}/Nmap scan report for/{gsub(/[()]/,"",$NF); printf "%s\t", $NF;}/MAC Address:/{gsub("[()]","");printf "%s   ", $3; for(i=4; i<=NF; ++i)}' > newIpMacList 
 _scan1=$(<ipList_$_D_$_T)
 _scan2=$(<gsubList)
+_scan3=$(<newIpMacList)
 ## get list of only ip addresses
 ## and then scan top 100 ports
 sudo nmap -n -sP $_lanIP/24 -oG - | awk '/Up$/{print $2}' | sort -V > iptargets
@@ -31,11 +35,27 @@ sudo nmap -v0 -O -F -iL iptargets -oG ip-ports #old
 _ports=$(<ip-ports)
 sudo nmap -v0 -O -F -iL gsubList -oG gsubList-portscan
 _ports2=$(<gsubList-portscan)
+#
+#########################
+# Setup email variables #
+#########################
+_ConNet="Connected Network:\n$_ssID"
+_AllNet="Available Networks:\n$_allssID"
+_CurCon="Current Connection:\n$_host"
+_NetScan="Network Scan:\nTHIS IS SCAN 1:\n$_scan1"
+_test2="THIS IS TEST SCAN 2:\n$_scan2"
+_test3="THIS IS TEST SCAN 3:\n$_scan3"
+_OPorts="OPEN PORTS 1:\n$_ports"
+_testPorts="THIS IS gsub PORTS 2:\n$_ports2"
+_ARP="ARP SCAN RESULTS:\n$_arp"
+#################
+## START EMAIL ##
+#################
 _sub="Network Scan (From Tiny Pi)"
-_bod=" ARP SCAN RESULTS on \n$_T $_D :: \n\nNetwork:\n$_ssID\nHost IP:\n$_host\n\nNetwork Scan:\nTHIS IS SCAN 1$_scan1\n\nTHIS IS SCAN 2\n\n$_scan2\n\n\nTHIS IS OPEN PORTS 1\n$_ports\n\nTHIS IS OPEN PORTS 2\n$_ports2$_arp "
+_bod=" ARP SCAN RESULTS on \n$_D $_T :: \n\n$_ConNet\n$_AllNet\n\n$_CurCon\n\n$_NetScan\n\n$_test2\n\n$_test3\n\n\n$_OPorts\n\n$_testPorts\n\n$_ARP "
 _who="jmahaffey09@yahoo.com"
 
 ### Configure Email for Sending ###
 echo -e "Subject: $_sub\n\n$_bod" | msmtp -a gmail "$_who"
 
-sudo rm arpscan.txt scan.txt iptargets ip-ports
+sudo rm arpscan.txt iptargets ip-ports ipList* gsubList gsubList-portscan
