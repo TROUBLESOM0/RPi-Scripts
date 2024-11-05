@@ -78,4 +78,4 @@ _who="jmahaffey09@yahoo.com"
 ### Configure Email for Sending ###
 echo -e "Subject: $_sub\n\n$_bod" | msmtp -a gmail "$_who"
 # remove temp files
-sudo rm arpscan.txt iptargets ip-ports ipList* gsubList gsubList-portscan
+sudo rm arpscan.txt iptargets ip-ports ipList* gsubList gsubList-portscan ipFilter newIpMacList
