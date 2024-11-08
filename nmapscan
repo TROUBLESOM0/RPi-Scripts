@@ -15,7 +15,7 @@ else
 	dir=`pwd`
 	sudo ln -s $dir/nmapscan /bin/nmapscan
 	touch nmapscan.service
-	echo -e "[Unit]\nDescription=Run script to scan network and send email\nAfter=network-online.target\nWants=network-online.target\n\n[Service]\nExecStart=/bin/nmapscan\nType=oneshot\nUser=root\nRemainAfterExit=true\n\n[Install]\nWantedBy=multi-user.target" > nmapscan.service
+	echo -e "[Unit]\nDescription=Run script to scan network and send email\nAfter=network-online.target\nWants=network-online.target\n\n[Service]\nExecStartPre=/bin/sleep 180\nExecStart=/bin/nmapscan\nExecStartPost=/bin/systemctl stop nmapscan.service\nType=oneshot\nUser=root\nRemainAfterExit=true\n\n[Install]\nWantedBy=multi-user.target" > nmapscan.service
 	sudo chown root:root nmapscan.service
 	sudo chmod u+rwx,g+rwx,o+rwx nmapscan.service
 	sudo ln -s $dir/nmapscan.service /etc/systemd/system/nmapscan.service
@@ -98,6 +98,25 @@ _ports2=$(<gsubList-portscan)
 #########################
 # Setup email variables #
 #########################
+#
+### Configured for HTML ###
+#_HTML="Content-Type: text/html; charset=UTF-8"
+#_ConNet="<p><u>Connected Network:</u></p><p>$_ssID</p>"
+#_AllNet="<u>Available Networks:</u><p>$_allssID</p>"
+#_CurCon="<u>Current Connection:</u><p>$_host</p>"
+#_NetScan="<u>SCAN 1:</u><p>$_scan1</p>"
+#_test2="<u>SCAN 2:<u/><p>$_scan2</p>"
+#_test3="<u>SCAN 3:</u></p>$_scan3</p>"
+#_OPorts="<u>OPEN PORTS 1:</u><p>$_ports</p>"
+#_testPorts="<u>THIS IS gsub PORTS 2:</u><p>$_ports2</p>"
+#_ARP="<u>ARP SCAN RESULTS:</u><p>$_arp</p>"
+#_test4="<u>IP, MAC, VENDOR:</u><p>$_scan4</p>"
+#_sub="Network Scan (From Tiny Pi)"
+#_bod="<html><body>ARP SCAN RESULTS on \n$_D $_T :: <br>$_ConNet\n$_AllNet<br>$_CurCon<br>$_test4<br>$_NetScan<br>$_test2<br>$_test3<br>$_OPorts<br>$_testPorts<br>$_ARP </body></html>"
+#_who="jmahaffey09@yahoo.com"
+###########################
+#
+### Basic Configuration ###
 _ConNet="Connected Network:\n$_ssID"
 _AllNet="Available Networks:\n$_allssID"
 _CurCon="Current Connection:\n$_host"
@@ -112,7 +131,7 @@ _test4="IP, MAC, VENDOR:\n$_scan4 "
 ## START EMAIL ##
 #################
 _sub="Network Scan (From Tiny Pi)"
-_bod=" ARP SCAN RESULTS on \n$_D $_T :: \n\n$_ConNet\n$_AllNet\n\n$_CurCon\n\n$_test4\n\n$_NetScan\n\n$_test2\n\n$_test3\n\n\n$_OPorts\n\n$_testPorts\n\n$_ARP "
+_bod="ARP SCAN RESULTS on \n$_D $_T :: \n\n$_ConNet\n$_AllNet\n\n$_CurCon\n\n$_test4\n\n$_NetScan\n\n$_test2\n\n$_test3\n\n\n$_OPorts\n\n$_testPorts\n\n$_ARP "
 _who="jmahaffey09@yahoo.com"
 
 ### Test if internet working
@@ -124,7 +143,6 @@ else
 	exit 0
 fi
 ### Configure Email for Sending ###
-echo -e "Subject: $_sub\n\n$_bod" | msmtp -a gmail "$_who"
+echo -e "$_HTML\nSubject: $_sub\n\n$_bod" | msmtp -a gmail "$_who"
 # remove temp files
-sudo rm arpscan.txt iptargets ip-ports ipList* gsubList gsubList-portscan ipFilter newIpMacList
-
+sudo rm arpscan.txt iptargets ip-ports ipList* gsubList gsubList-portscan ipFilter #newIpMacList
