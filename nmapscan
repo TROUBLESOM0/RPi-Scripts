@@ -1,7 +1,7 @@
 #!/usr/bin/bash
-# From: mohafabode.com@gmail.com
+# From: 'email@email.com'
 # Send email with msmtp
-# echo -e "Subject: Your Subject Here\n\nBody of Email Here" | msmtp -a gmail jmahaffey09@yahoo.com
+# echo -e "Subject: Your Subject Here\n\nBody of Email Here" | msmtp -a gmail 'email@email.com'
 #
 #
 # check if exists in /bin
@@ -77,7 +77,7 @@ _lanIP=$rootIP
 # running nmap scans##
 ######################
 # get ip, mac, vendor and file in ipFilter
-sudo nmap -sn 192.168.0.0/24 | grep -E "Nmap scan report|MAC Address" | awk '/Nmap scan report/{ip=$NF} /MAC Address/{print ip, $3,$4,$5}' > ipFilter
+sudo nmap -sn $_lanIP/24 | grep -E "Nmap scan report|MAC Address" | awk '/Nmap scan report/{ip=$NF} /MAC Address/{print ip, $3,$4,$5}' > ipFilter
 #
 nmap -sn $_lanIP/24 | awk '/Nmap scan/{gsub(/[()]/,"",$NF); print $NF > "gsubList"}'
 sudo nmap -sP $_lanIP/24 > ipList
@@ -113,7 +113,7 @@ _ports2=$(<gsubList-portscan)
 #_test4="<u>IP, MAC, VENDOR:</u><p>$_scan4</p>"
 #_sub="Network Scan (From Tiny Pi)"
 #_bod="<html><body>ARP SCAN RESULTS on \n$_D $_T :: <br>$_ConNet\n$_AllNet<br>$_CurCon<br>$_test4<br>$_NetScan<br>$_test2<br>$_test3<br>$_OPorts<br>$_testPorts<br>$_ARP </body></html>"
-#_who="jmahaffey09@yahoo.com"
+#_who="email@email.com"
 ###########################
 #
 ### Basic Configuration ###
