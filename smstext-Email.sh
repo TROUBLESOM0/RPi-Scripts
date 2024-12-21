@@ -1,10 +1,10 @@
 #!/usr/bin/bash
-# Send sms from mohafabode.com@gmail.com
+# Send sms from gmail
 ## Can only run 1 per minute
 #
-# From: mohafabode.com@gmail.com
+# From: gmail
 # Send email with msmtp
-# echo -e "Subject: Your Subject Here\n\nBody of Email Here" | msmtp -a gmail jmahaffey09@yahoo.com
+# echo -e "Subject: Your Subject Here\n\nBody of Email Here" | msmtp -a gmail email@email.com
 #
 _num="111223333"
 # Carrier
