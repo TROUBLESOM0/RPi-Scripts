@@ -33,7 +33,7 @@ _PROGRAM=nmapscan
 #
 ## sets date and time
 _D=$(date +"%m-%d-%Y")
-_T=$(date +"H:%M")
+_T=$(date +"%H:%M")
 #
 #################################
 #           FUNCTIONS           #
@@ -254,9 +254,10 @@ fi
 ## get SSID w/ (iwgetid)
 #
 #####################################
+# {sed 's/^[[:space:]]*//'}  shifts output to the left
 _hostIP=$(hostip)
-_ssID=$(iwgetid | cut --complement -d' ' -f1)
-_allssID=$(sudo iwlist wlan0 scan | grep ESSID)
+_ssID=$(iwgetid | cut --complement -d' ' -f1 | sed 's/^[[:space:]]*//')
+_allssID=$(sudo iwlist wlan0 scan | grep "ESSID" | sed 's/^[[:space:]]*//')
 ##
 ## gentle scan (arp) to get basic network specs
 arp > arpscan.txt
