@@ -1,4 +1,5 @@
 #!/bin/bash
+# nmapscan.sh v2.2
 # Send email with msmtp
 # Below is the script used to actually send email
 # echo -e "Subject: Your Subject Here\n\nBody of Email Here" | msmtp -a [From Email config in msmtprc] [To Email]
