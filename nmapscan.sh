@@ -18,6 +18,12 @@ _to="email@email.com"  # who to send to
 _from="gmail"  # who to send from (configured in msmtprc)
 #
 #
+# check _to and _from #
+if [[ "$_to" == "email@email.com" ]]
+then echo "Must change variable for _to in script"
+exit 1
+else :
+fi
 #########################
 ### GENERIC VARIABLES ###
 #########################
