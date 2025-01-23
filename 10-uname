@@ -5,7 +5,7 @@ figlet -c -f banner TINYPI
 echo "----------------------------------------------------------------"
 uname -snrvm
 echo "UNIT" $(grep Model /proc/cpuinfo | cut -f 3)
-echo "VOLTS : " $(/opt/vc/bin/vcgencmd measure_volts | cut -f 2 -d '=')
+echo "VOLTS : " $(/usr/bin/vcgencmd measure_volts | cut -f 2 -d '=')
 temp
 df -h ~ | awk 'NR==2 {printf "\033[32mTotal: %sB, \033[31mUsed: %sB, \033[96mFree: %sB\033[0m",$2,$3,$4;}'
 echo -e "\n"
