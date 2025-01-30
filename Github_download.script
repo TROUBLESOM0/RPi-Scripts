@@ -49,7 +49,7 @@ bin=/bin/
 gitDir="RPi-Scripts-Scripts"
 scriptsDir="RPI-Scripts"
 gitDL="Scripts.zip"
-gitLink="https://github.com/TROUBLESOM0/RPi-Scripts/archive/refs/heads/Scripts.zip"
+gitLink="https://github.com/TROUBLESOM0/RPi-Scripts/archive/refs/tags/v2.3.zip"
 # #FOR TESTING ONLY# gitLink=~/Public/Scripts.zip
 #
 #############################################
