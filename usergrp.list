@@ -1,5 +1,0 @@
-#!/bin/bash
-#
-# lists users and their group assignments
-cut -d: -f1 /etc/passwd | xargs groups
-
