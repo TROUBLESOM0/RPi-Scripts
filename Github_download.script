@@ -74,6 +74,40 @@ do printf "."
 done
 echo
 }
+#
+############################
+###   ASK_INSTALLUNZIP   ###
+############################
+ask_Installunzip () {
+while true
+do
+read -r -p "Do You Want To Install Unzip? [Y/n]" ask_unzip_input
+case $ask_unzip_input in
+[yY][eE][sS]|[yY])
+echo "Installing unzip"
+s
+sudo apt install unzip -y -qq > /dev/null
+s
+if type unzip &>/dev/null
+then :
+else
+echo "unzip installation failed. Try installing manually with sudo apt install unzip"
+exit 1
+fi
+break
+;;
+[nN][oO]|[nN]
+echo "Install Cancelled"
+break
+;;
+*)
+echo "Must enter (Y/n)"
+s
+exit 0
+;;
+esac
+done
+}
 # 
 #############################################
 ###                 UNZIP                 ###
@@ -361,15 +395,32 @@ echo "Linking Complete"
 echo "All scripts installed"
 }
 
-#############################################
-#############################################
+############################
+#      Initial Checks      #
+############################
 echo "Downloads Raspberry Pi Scripts zip into current folder : '$dir'"
+# Check script is running as root
+if [[ $( whoami ) != "root" ]]
+then echo -e "${Error}ERROR${Off} Must be run as sudo or root"
+exit 1
+fi
+#
+# Check if unzip is installed
+if type unzip &>/dev/null
+then : # continues script
+else
+echo "ERROR unzip is not installed"
+ask_Installunzip
+echo "unzip install complete"
+fi
+#############################################
+#              Begin Script                 #
+#############################################
 if test -f $gitDL
 then echo "$gitDL file already exists"
 s1
 ask_Replace
 else ask_DL
 fi
-
 echo "ENDING"
 #########################################
