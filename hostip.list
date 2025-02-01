@@ -1,9 +1,0 @@
-#!/bin/bash
-#
-# lists current IP ADDRESS
-loc=$(hostname -I | awk '{print $1}')
-lan=$(hostname -I | awk '{print $2}')
-pub=$(curl -s ifconfig.me)
-echo "LOCAL IP: $loc"
-echo "LAN IP: $lan"
-echo "PUBLIC IP: $pub"
