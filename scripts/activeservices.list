@@ -1,0 +1,4 @@
+#!/bin/bash
+# List all active and  running services
+systemctl list-units --type=service --state=running
+

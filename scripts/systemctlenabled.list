@@ -1,0 +1,5 @@
+#!bin/bash
+#
+#Lists all services that are Enabled to run at Start-up
+#
+sudo systemctl list-unit-files --type=service --state=enabled --all

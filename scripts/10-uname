@@ -1,0 +1,18 @@
+#!/bin/bash
+#
+echo "----------------------------------------------------------------"
+figlet -c -f banner TINYPI
+echo "----------------------------------------------------------------"
+uname -snrvm
+echo "UNIT" $(grep Model /proc/cpuinfo | cut -f 3)
+echo "VOLTS : " $(/usr/bin/vcgencmd measure_volts | cut -f 2 -d '=')
+temp
+df -h ~ | awk 'NR==2 {printf "\033[32mTotal: %sB, \033[31mUsed: %sB, \033[96mFree: %sB\033[0m",$2,$3,$4;}'
+echo -e "\n"
+echo -e "\e[4mPackages Recently Installed:\e[24m \e[45m$(cat /var/log/dpkg.log | grep -wc install)\e[0m"
+echo -e "IP: \e[1;97;100m$(hostip)\e[0m" 
+echo "----------------------------------------------------------------"
+echo -e "\e[44m\e[4mSSH CLIENT\e[0m" ":"$(awk '{print $1}' ~/scripts/sshclient.list)\
+$(echo -e " \e[44;4mOUT\e[0m" ":"$(awk '{print $2}' ~/scripts/sshclient.list))\
+$(echo -e " \e[44;4mIN\e[0m" " :"$(awk '{print $3}' ~/scripts/sshclient.list))
+#echo $(/home/pi/scripts/sshclient.sh)
