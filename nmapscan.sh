@@ -375,6 +375,6 @@ _bod="ARP SCAN RESULTS on \n$_D $_T :: \n\n$_ConNet\n$_AllNet\n\n$_CurCon\n\n$_t
 #
 echo -e "Subject: $_sub\n\n$_bod" | msmtp -a "$_from" "$_to"
 # remove temp files
-#sudo rm arpscan.txt iptargets ip-ports ipList* gsubList gsubList-portscan ipFilter newIpMacList
+sudo rm arpscan.txt iptargets ip-ports ipList* gsubList gsubList-portscan ipFilter newIpMacList
 echo "email sent to $_to"
 exit 0
