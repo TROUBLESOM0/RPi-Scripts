@@ -96,7 +96,7 @@ exit 1
 fi
 break
 ;;
-[nN][oO]|[nN]
+[nN][oO]|[nN])
 echo "Install Cancelled"
 break
 ;;
