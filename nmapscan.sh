@@ -218,7 +218,7 @@ echo -e "\033[32mYou will have to configure this file manually.\033[0m"
 echo -e "\033[32mThis script will create the file and setup a default template... But,\033[0m"
 echo -e "\033[32myou will have to add the email account info and authentication password\033[0m"
 sudo touch /etc/msmtprc
-echo -e "defaults\auth on\ntls on\ntls_starttls on\ntls_trust_file /etc/ssl/certs/ca-certificates.crt\nlogfile /var/log/msmtp_mail.log\n\naccount gmail\nhost smtp.gmail.com\nport 587\n\nfrom email@gmail.com\nuser email@gmail.com\npassword xxxxxxxx\n\naccount default: gmail\naliases /etc/aliases" > /etc/msmtprc
+echo -e "defaults\nauth on\ntls on\ntls_starttls on\ntls_trust_file /etc/ssl/certs/ca-certificates.crt\nlogfile /var/log/msmtp_mail.log\n\naccount gmail\nhost smtp.gmail.com\nport 587\n\nfrom email@gmail.com\nuser email@gmail.com\npassword xxxxxxxx\n\naccount default: gmail\naliases /etc/aliases" > /etc/msmtprc
 sudo chown root:msmtp /etc/msmtprc
 sudo chmod u+r,g+r,o-rwx /etc/msmtprc
 echo "created /etc/msmtprc and set permissions"
