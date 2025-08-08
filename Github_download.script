@@ -421,7 +421,7 @@ then echo "$gitDL file already exists"
 s1
 ask_Replace
 else ask_DL
-cp $scripts /home/$SUDO_USER/
+cp -r $scripts /home/$SUDO_USER/
 fi
 echo "ENDING"
 #########################################
