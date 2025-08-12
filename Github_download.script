@@ -46,7 +46,6 @@ repeatDate=$(date "+%m-%d-%Y.%T")
 dir=`pwd`
 userHome=$(eval echo "~$SUDO_USER")
 scripts=$userHome/scripts
-scriptsOwn=$(stat -c %U $scripts)
 bin=/bin/
 gitDir="RPi-Scripts-Scripts"
 scriptsDir="RPI-Scripts"
@@ -434,6 +433,9 @@ echo "All scripts installed"
 #      CLEAN_UP      #
 ######################
 clean_Up () {
+
+scriptsOwn=$(stat -c %U $scripts)
+
 echo -e "\nCleaning up and setting permissions"
 if [ "$scriptsOwn" != "$SUDO_USER" ]
 then echo "..changing $scripts ownership to $SUDO_USER..."
