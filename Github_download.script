@@ -435,13 +435,37 @@ echo "All scripts installed"
 clean_Up () {
 
 scriptsOwn=$(stat -c %U $scripts)
+gitDLOwn=$(stat -c %U $gitDL)
+scriptsDirOwn=$(stat -c %U $scriptsDir)
 
 echo -e "\nCleaning up and setting permissions"
+
 if [ "$scriptsOwn" != "$SUDO_USER" ]
 then echo "..changing $scripts ownership to $SUDO_USER..."
 chown -h -R "$SUDO_USER":"$SUDO_USER" $scripts
 else :
 fi
+
+if [[ -f gitDL ]]
+then echo "checking $gitDL ownership"
+  if [ "$gitDLOwn" != "$SUDO_USER" ]
+  then echo "..changing $gitDL ownership to $SUDO_USER..."
+  chown -h "$SUDO_USER":"$SUDO_USER" $gitDL
+  else :
+  fi
+else :
+fi
+
+if [[ -d $scriptsDir ]]
+then echo "checking $scriptsDir ownership"
+  if [ "$scriptsDirOwn" != "$SUDO_USER" ]
+  then echo "..changing $scriptsDir ownership to $SUDO_USER..."
+  chown -h -R "$SUDO_USER":"$SUDO_USER" $scriptsDir
+  else :
+  fi
+else :
+fi
+
 }
 ############################
 #      Initial Checks      #
