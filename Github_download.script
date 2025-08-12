@@ -174,6 +174,7 @@ break
 ;;
 [nN][oO]|[nN])
 echo "Keeping Scripts.zip"
+chown $SUDO_USER:$SUDO_USER $gitDL
 cp_Scripts
 break
 ;;
@@ -232,6 +233,7 @@ echo $currentDate
 if test -f bkup_Scripts-$currentDate.zip
 then cp $gitDL bkup_Scripts-$repeatDate.zip
 else cp $gitDL bkup_Scripts-$currentDate.zip
+chown $SUDO_USER:$SUDO_USER bkup_Scripts*
 fi
 rm $gitDL
 s3
@@ -271,6 +273,7 @@ s5
 dot_delay
 else echo "$scripts exists... creating backup"
 cp -r $scripts $dir/bkup_scripts-$repeatDate
+chown $SUDO_USER:$SUDO_USER $dir/bkup_scripts*
 s5
 dot_delay
 echo "'$scripts' backed up to '$dir/bkup-scripts-$repeatDate'"
@@ -438,7 +441,7 @@ echo -e "\nCleaning up and setting permissions"
 
 if [ "$scriptsOwn" != "$SUDO_USER" ]
 then echo "..changing $scripts ownership to $SUDO_USER..."
-chown -h -R "$SUDO_USER":"$SUDO_USER" $scripts
+chown -R $SUDO_USER:$SUDO_USER $scripts
 else :
 fi
 }
