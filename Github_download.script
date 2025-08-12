@@ -430,6 +430,17 @@ echo "Linking Complete"
 echo "All scripts installed"
 }
 
+######################
+#      CLEAN_UP      #
+######################
+clean_Up () {
+echo -e "\nCleaning up and setting permissions"
+if [ "$scriptsOwn" != "$SUDO_USER" ]
+then echo "..changing $scripts ownership to $SUDO_USER..."
+chown -h -R "$SUDO_USER":"$SUDO_USER" $scripts
+else :
+fi
+}
 ############################
 #      Initial Checks      #
 ############################
@@ -468,5 +479,6 @@ ask_Replace
 else ask_DL
 cp -r $scripts /home/$SUDO_USER/
 fi
+clean_Up
 echo "ENDING"
 #########################################
