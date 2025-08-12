@@ -481,7 +481,6 @@ then echo "$gitDL file already exists"
 s1
 ask_Replace
 else ask_DL
-cp -r $scripts /home/$SUDO_USER/
 fi
 clean_Up
 echo "ENDING"
