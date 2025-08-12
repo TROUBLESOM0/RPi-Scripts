@@ -44,7 +44,9 @@ repeatDate=$(date "+%m-%d-%Y.%T")
 #############################################
 ### variables for files/directories ###
 dir=`pwd`
-scripts=~/scripts
+userHome=$(eval echo "~$SUDO_USER")
+scripts=$userHome/scripts
+scriptsOwn=$(stat -c %U $scripts)
 bin=/bin/
 gitDir="RPi-Scripts-Scripts"
 scriptsDir="RPI-Scripts"
@@ -101,7 +103,41 @@ echo "Install Cancelled"
 break
 ;;
 *)
-echo "Must enter (Y/n)"
+echo "Must enter [Y/n]"
+s
+exit 0
+;;
+esac
+done
+}
+# 
+###########################
+###   ASK_INSTALLCURL   ###
+###########################
+ask_Installcurl () {
+while true
+do
+read -r -p "Do You Want To Install Curl? [Y/n]" ask_curl_input
+case $ask_curl_input in
+[yY][eE][sS]|[yY])
+echo "Installing curl"
+s
+sudo apt install curl -y -qq > /dev/null
+s
+if type curl &>/dev/null
+then :
+else
+echo "curl installation failed. Try installing manually with sudo apt install curl"
+exit 1
+fi
+break
+;;
+[nN][oO]|[nN])
+echo "Install Cancelled"
+break
+;;
+*)
+echo "Must enter [Y/n]"
 s
 exit 0
 ;;
@@ -295,7 +331,6 @@ fi
 #############################################
 ###                INSTALL                ###
 #############################################
-#!/bin/bash
 #
 # installs from inside /scripts/ folder
 #
@@ -413,6 +448,16 @@ echo "ERROR unzip is not installed"
 ask_Installunzip
 echo "unzip install complete"
 fi
+#
+# Check if curl is installed
+if type curl &>/dev/null
+then : # continues script
+else
+echo "ERROR curl is not installed"
+ask_Installcurl
+echo "curl install complete"
+fi
+#
 #############################################
 #              Begin Script                 #
 #############################################
