@@ -24,7 +24,7 @@ UNIT_FILE="/etc/systemd/system/email-halt.service"
 
 #this variable required to compile MIME-type message
 # before sending outside of mpack
-tmp="~/email.tmp"
+#tmp="~/email.tmp"
 body="~/body.tmp"
 
 # Include remailing sms balance in text
@@ -49,7 +49,7 @@ then echo "Installing system service to send notification on Shutdown or Reboot.
     exit 1
     fi
 
-	if [ $os_version -eq "bookwork" ]
+	if [ $os_version = "bookworm" ]
 	then
   # Build system service file for bookworm
   cat <<EOF > "$UNIT_FILE"
@@ -72,9 +72,9 @@ then echo "Installing system service to send notification on Shutdown or Reboot.
 EOF
 # Can Not indent EOF
 
-    elif [ $os_version -eq "buster" ]
-	then
-	# Build system service file for buster
+    elif [ $os_version = "buster" ]
+    then
+  # Build system service file for buster
   cat <<EOF > "$UNIT_FILE"
   [Unit]
   Description=Send email before shutdown or reboot
@@ -95,8 +95,8 @@ EOF
 EOF
 
     else echo "OS version not compatible."
-	exit 1
-	fi
+    exit 1
+    fi
 
 # Set permissions of .service file, reload, and start
   chmod 644 $UNIT_FILE
@@ -143,7 +143,7 @@ then mpack -s "Log File: $halt_type - $hostname" $EMAIL_PAYLOAD2
 
 
 # Third, just send an email with msmtp if no file exists
-else echo -e "To: $_to\nFrom: $_from\nSubject:Log File NOT FOUND\n\nLog file not found at \n$EMAIL_PAYLOAD1\nor\n$EMAIL_PAYLOAD2\n\n$halt_type on $hostname\n$DATE" | sudo msmtp -a admin $_to
+else echo -e "To: $_to\nFrom: $_from\nSubject:$hostname $halt_type\n\nLog file not found at \n$EMAIL_PAYLOAD1\nor\n$EMAIL_PAYLOAD2\n\n$halt_type on $hostname\n$DATE" | sudo msmtp -a $_from $_to
 fi
 
 rm -f $tmp
@@ -152,9 +152,9 @@ rm -f $body
 # Send SMS (parameters separated by "\")
 curl -X POST https://textbelt.com/text \
        --data-urlencode phone=$_num \
-       --data-urlencode message="Input Message
-Separate lines of texts like with <CR>.
-Source Host: $hostname
+       --data-urlencode message="Notification:
+$hostname
+Type: $halt_type
 
 Text Remaining: $smsLeft" \
        -d key=$_textAPI
