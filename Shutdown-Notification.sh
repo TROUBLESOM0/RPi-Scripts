@@ -37,8 +37,8 @@ fi
 
 
 # One Time Setup for service to run before reboot/shutdown
-if [[ ! -f $UNIT_FILE ]]; then
-  echo "Installing system service to send notification on Shutdown or Reboot."
+if [[ ! -f $UNIT_FILE ]]
+then echo "Installing system service to send notification on Shutdown or Reboot."
     if [[ -d /etc/systemd/system ]]
     then :
     else echo "/etc/systemd/system not the correct directory for this setup. Exiting."
@@ -63,7 +63,8 @@ if [[ ! -f $UNIT_FILE ]]; then
 
   [Install]
   WantedBy=multi-user.target
-  EOF
+EOF
+# Can Not indent EOF
 
 # Set permissions of .service file, reload, and start
   chmod 644 $UNIT_FILE
@@ -73,10 +74,10 @@ if [[ ! -f $UNIT_FILE ]]; then
   systemctl enable email-halt.service
   systemctl start email-halt.service
     if [ $? -eq 0 ]
-	  then echo "Service started without issues"
-	  else echo "Issue starting service"
+	then echo "Service started without issues"
+	else echo "Issue starting service"
     exit 1
-	  fi
+	fi
 
 # Continue script if email-halt.service already exists.
 else :
