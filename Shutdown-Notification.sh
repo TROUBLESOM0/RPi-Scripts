@@ -8,6 +8,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 EMAIL_PAYLOAD1=""
 EMAIL_PAYLOAD2=""
+DATE=$(date '+%Y-%m-%d %H:%M:%S')
 _to="email@email.com"
 _num="1112223333"  #recipient for sms
 _from="" #configured in /etc/msmtprc
@@ -105,11 +106,11 @@ echo "Log file at $EMAIL_PAYLOAD1 attached"
 
 # Second check if file exists and send file with mpack
 elif [[ -f $EMAIL_PAYLOAD2 ]]
-then mpack -s "Log File: $halt_type - $hostname" $EMAIL_PAYLOAD2 $_email
+then mpack -s "Log File: $halt_type - $hostname" $EMAIL_PAYLOAD2
 
 
 # Third, just send an email with msmtp if no file exists
-else echo -e "To: $_to\nFrom: $_from\nSubject:Log File NOT FOUND\n\nLog file not found at \n$EMAIL_PAYLOAD1\nor\n$EMAIL_PAYLOAD2\n\n$halt_type on $hostname" | sudo msmtp -a admin $_to
+else echo -e "To: $_to\nFrom: $_from\nSubject:Log File NOT FOUND\n\nLog file not found at \n$EMAIL_PAYLOAD1\nor\n$EMAIL_PAYLOAD2\n\n$halt_type on $hostname\n$DATE" | sudo msmtp -a admin $_to
 fi
 
 rm -f $tmp
