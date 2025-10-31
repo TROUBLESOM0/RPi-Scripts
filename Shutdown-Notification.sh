@@ -16,6 +16,9 @@ _textAPI="textbelt API"
 halt_type="Unknown Restart"
 hostname=`hostname`
 
+# GET OS Version
+os_version=$(cat /etc/os-release | grep VERSION_CODENAME | cut -d '=' -f2)
+
 # variables for system unit file
 UNIT_FILE="/etc/systemd/system/email-halt.service"
 
@@ -27,6 +30,7 @@ body="~/body.tmp"
 # Include remailing sms balance in text
 getLeft=$(curl -s "https://textbelt.com/quota/$_textAPI")
 smsLeft=$(echo "$getLeft" | grep -oP '(?<="quotaRemaining":)\d+')
+
 
 # Check what we're shutting down into
 if systemctl list-jobs | grep -q 'reboot.target'; then
@@ -44,8 +48,10 @@ then echo "Installing system service to send notification on Shutdown or Reboot.
     else echo "/etc/systemd/system not the correct directory for this setup. Exiting."
     exit 1
     fi
-    
-  # Build system service file
+
+	if [ $os_version -eq "bookwork" ]
+	then
+  # Build system service file for bookworm
   cat <<EOF > "$UNIT_FILE"
   [Unit]
   Description=Send email before shutdown or reboot
@@ -65,6 +71,32 @@ then echo "Installing system service to send notification on Shutdown or Reboot.
   WantedBy=multi-user.target
 EOF
 # Can Not indent EOF
+
+    elif [ $os_version -eq "buster" ]
+	then
+	# Build system service file for buster
+  cat <<EOF > "$UNIT_FILE"
+  [Unit]
+  Description=Send email before shutdown or reboot
+  DefaultDependencies=no
+  Before=halt.target reboot.target shutdown.target
+  Requires=network-online.target
+  After=network-online.target
+
+  [Service]
+  Type=oneshot
+  ExecStart=/bin/true
+  ExecStop=/usr/bin/sudo $SCRIPT_DIR/Shutdown-Notification.sh
+  RemainAfterExit=true
+  TimeoutSec=10
+
+  [Install]
+  WantedBy=multi-user.target
+EOF
+
+    else echo "OS version not compatible."
+	exit 1
+	fi
 
 # Set permissions of .service file, reload, and start
   chmod 644 $UNIT_FILE
