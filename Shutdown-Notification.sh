@@ -1,6 +1,7 @@
 #!/bin/bash
 # MSMTP and MPACK are required to be installed and setup
-# Must configure variables below
+# *** Must configure variables below ***
+# *** Must make this file executable ***
 
 # Obtain real directory of this file
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
