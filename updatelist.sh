@@ -7,7 +7,7 @@
 # give up if there is a dependency problem
 [[ "$((apt-get upgrade -s -qq) 2>&1)" == *"Unmet dependencies"* ]] && exit 0
 
-file="/home/pi/scripts/updates.number"
+file="~/scripts/updates.number"
 
 # update procedure
 DISTRO=$(lsb_release -c | cut -d ":" -f 2 |  tr -d '[:space:]') && DISTRO=${DISTRO,,}
