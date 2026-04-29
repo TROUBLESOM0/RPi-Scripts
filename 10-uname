@@ -1,18 +1,56 @@
 #!/bin/bash
-#
-echo "----------------------------------------------------------------"
-figlet -c -f banner TINYPI
-echo "----------------------------------------------------------------"
-uname -snrvm
+
+#colors
+TOTAL='\033[0;32m'
+USED='\033[31m'
+FREE='\033[36m'
+UPTIME='\033[1;38;5;20;48;5;7m'
+RAM='\033[1;38;5;13;48;5;7m'
+DISK='\033[1;38;5;22;48;5;7m'
+WIFI='\033[1;33m'
+UNDERLINE_RED='\033[1;004m'
+CYANBG='\e[46m'
+UNDERLINE='\e[4m'
+END='\033[0m'
+ENDUNDERLINE='\e[24m'
+
+if [ -n "$SSH_CLIENT" ]
+then
+addr=($SSH_CLIENT)
+else :
+fi
+wifi=`iwgetid | cut -d "\"" -f 2`
+ip=`hostip`
+host=`hostname`
+raw="$(cut -d. -f1 /proc/uptime)"
+s=$((${raw}%60))
+m=$((${raw}/60%60))
+h=$((${raw}/3600%24))
+d=$((${raw}/86400))
+uptime=`printf "%d days, %02dh%02dm%02ds" "$d" "$h" "$m" "$s"`
+mem=`free | grep Mem | awk '{print $4/1024}'`
+fr=`df -h | awk 'FNR == 2 {print $4}' | tr -d G`
+
+figlet -f digital $host
 echo "UNIT" $(grep Model /proc/cpuinfo | cut -f 3)
 echo "VOLTS : " $(/usr/bin/vcgencmd measure_volts | cut -f 2 -d '=')
 temp
-df -h ~ | awk 'NR==2 {printf "\033[32mTotal: %sB, \033[31mUsed: %sB, \033[96mFree: %sB\033[0m",$2,$3,$4;}'
-echo -e "\n"
-echo -e "\e[4mPackages Recently Installed:\e[24m \e[45m$(cat /var/log/dpkg.log | grep -wc install)\e[0m"
-echo -e "IP: \e[1;97;100m$(hostip)\e[0m" 
-echo "----------------------------------------------------------------"
-echo -e "\e[44m\e[4mSSH CLIENT\e[0m" ":"$(awk '{print $1}' ~/scripts/sshclient.list)\
-$(echo -e " \e[44;4mOUT\e[0m" ":"$(awk '{print $2}' ~/scripts/sshclient.list))\
-$(echo -e " \e[44;4mIN\e[0m" " :"$(awk '{print $3}' ~/scripts/sshclient.list))
-#echo $(/home/pi/scripts/sshclient.sh)
+df -h ~ | awk -v G="$TOTAL" -v R="$USED" -v C="$FREE" -v E="$END" 'NR==2 {printf "%sTotal: %sB, %sUsed: %sB, %sFree: %sB%s\n", G, $2, R, $3, C, $4, E;}'
+#df -h ~ | awk 'NR==2 {printf "'$GREEN'Total: %sB, '$RED'Used: %sB, '$LTCYANFree: %sB'$END'\n",$2,$3,$4;}'
+echo -e "\n-------------------------------------"
+echo -e "-${UPTIME}UPTIME${END}.....: ${uptime}"
+echo -e "-${RAM}RAM${END}........: ${mem} MB(free)"
+echo -e "-${DISK}DISK${END}.......: ${fr} GB(free)"
+echo -e "-------------------------------------"
+echo -e "Connected to ${WIFI}'$wifi'${END}"
+#echo -e "${UNDERLINE_RED}With IP Address:${END}"
+echo "$ip"
+echo ""
+echo -e "${UNDERLINE}Packages Recently Installed:${ENDUNDERLINE}" "${CYANBG}""$(cat /var/log/dpkg.log | grep -wc install)\e[0m"
+echo "-------------------------------------"
+#echo -e "SSH"": "$(awk '{print $1}' ~/scripts/sshclient.list)\
+#$(echo -e " OUT"": "$(awk '{print $2}' ~/scripts/sshclient.list))\
+#$(echo -e " IN"": "$(awk '{print $3}' ~/scripts/sshclient.list))
+echo "SSH: ${addr[0]} IN: ${addr[1]} OUT: ${addr[2]}"
+echo "-------------------------------------"
+#echo $(~/scripts/sshclient.list)
