@@ -1,4 +1,4 @@
-
+_Download and run_
 ```
 wget "https://github.com/TROUBLESOM0/RPi-Scripts/releases/latest/download/Github_download.script"
 ```
