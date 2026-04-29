@@ -1,3 +1,4 @@
+
 # Cron scripts are stored at ~/.config/cronscripts
 #
 # After creating script, (from ~/scripts/)
