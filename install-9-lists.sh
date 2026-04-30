@@ -132,7 +132,6 @@ fi
 echo "This will set permissions and install "
 
 
-exit 0
 
 s2
 ### MOVING INTO ~/scripts
