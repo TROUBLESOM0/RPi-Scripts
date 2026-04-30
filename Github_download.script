@@ -302,21 +302,14 @@ install_Scripts
 #############################################
 #
 # installs from inside /scripts/ folder
-#
-# activeservices,
-# allpackages,
-# allservices,
-# hostip,
-# matrix,
-# makewebserver
-# systemctlenabled,
-# temp,
-# usergrp,
-#
+# View install-[number]-lists.sh for scripts to be installed
 #
 install_Scripts () {
-
-
+if [ -f install-*-lists.sh ]
+then bash install-*-lists.sh
+else echo "ERROR:  Unable to locate install-[number]-lists.sh"
+exit 1
+fi
 
 
 
