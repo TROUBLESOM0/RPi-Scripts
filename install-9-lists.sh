@@ -45,7 +45,22 @@ s3 () { sleep 3; }
 s4 () { sleep 4; }
 s5 () { sleep 5; }
 #
-
+#############################################
+### variables for current date ###
+currentDate=$(date "+%m-%d-%Y")
+repeatDate=$(date "+%m-%d-%Y.%T")
+#
+#############################################
+### variables for files/directories ###
+dir=`pwd`
+userHome=$(eval echo "~$SUDO_USER")
+scripts=$userHome/scripts
+bin=/bin/
+gitDir="RPi-Scripts-Scripts"
+scriptsDir="RPI-Scripts"
+gitDL="Scripts.zip"
+gitLink=$(curl -s https://api.github.com/repos/TROUBLESOM0/RPi-Scripts/releases/latest | grep "zipball_url" | cut -d '"' -f 4)
+# #FOR TESTING ONLY# gitLink=~/Public/Scripts.zip
 #
 #############################################
 ###            repeat characters          ###
@@ -115,6 +130,10 @@ fi
 
 
 echo "This will set permissions and install "
+
+
+exit 0
+
 s2
 ### MOVING INTO ~/scripts
 #list=`ls -1`
