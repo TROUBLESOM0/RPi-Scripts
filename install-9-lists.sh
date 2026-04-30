@@ -114,6 +114,7 @@ s2
 char_repeat 25 "."
 for char in {a..z}
 do
+[[ "$char" == "i" ]] && continue
 value="${!char}"
 if [ -n "$value" ]
 then echo "$value"
@@ -136,79 +137,35 @@ chmod u+rwx,g+rwx,o+r $scripts/$val
 done
 #chmod u+rwx,g+rwx,o+r $scripts/$a $scripts/$b $scripts/$c $scripts/$d $scripts/$e $scripts/$f $scripts/$g $scripts/$h $scripts/$j
 
-if [[ -f $bin$a1 ]]
-then echo "Replacing '$bin/$a1'"
-sudo rm $bin$a1
-echo "removed '$a1'"
+# loop thru variables a1-z1
+for var in {a..z}
+do
+varname="${var}1"
+val="${!varname}"
+#skip if empty or i
+[[ -z "$val" || "$var" == "i" ]] && continue
+if [[ -f $bin$val ]]
+then echo "Replacing '$bin/$val'"
+sudo rm $bin$val
+echo "removed '$val'"
 else dot_delay
 fi
-
-if [[ -f $bin$b1 ]]
-then echo "Replacing '$bin/$b1'"
-sudo rm $bin$b1
-echo "removed '$b1'"
-else dot_delay
-fi
-
-if [[ -f $bin$c1 ]]
-then echo "Replacing '$bin/$c1'"
-sudo rm $bin$c1
-echo "removed '$c1'"
-else dot_delay
-fi
-
-if [[ -f $bin$d1 ]]
-then echo "Replacing '$bin/$d1'"
-sudo rm $bin$d1
-echo "removed '$d1'"
-else dot_delay
-fi
-
-if [[ -f $bin$e1 ]]
-then echo "Replacing '$bin/$e1'"
-sudo rm $bin$e1
-echo "removed '$e1'"
-else dot_delay
-fi
-
-if [[ -f $bin$f1 ]]
-then echo "Replacing '$bin/$f1'"
-sudo rm $bin$f1
-echo "removed '$f1'"
-else dot_delay
-fi
-
-if [[ -f $bin$g1 ]]
-then echo "Replacing '$bin/$g1'"
-sudo rm $bin$g1
-echo "removed '$g1'"
-else dot_delay
-fi
-
-if [[ -f $bin$h1 ]]
-then echo "Replacing '$bin/$h1'"
-sudo rm $bin$h1
-echo "removed '$h1'"
-else dot_delay
-fi
-
-if [[ -f $bin$j1 ]]
-then echo "Replacing '$bin/$j1'"
-sudo rm $bin$j1
-echo "removed '$j1'"
-else dot_delay
-fi
+done
 
 echo "Linking......."
-sudo ln -s $scripts/$a $bin$a1 && \
-sudo ln -s $scripts/$b $bin$b1 && \
-sudo ln -s $scripts/$c $bin$c1 && \
-sudo ln -s $scripts/$d $bin$d1 && \
-sudo ln -s $scripts/$e $bin$e1 && \
-sudo ln -s $scripts/$f $bin$f1 && \
-sudo ln -s $scripts/$g $bin$g1 && \
-sudo ln -s $scripts/$h $bin$h1 && \
-sudo ln -s $scripts/$j $bin$j1
+# loop thru variables a1-z1
+for char in {a..z}
+do
+[[ "$char" == "i" ]] && continue
+src_name="${!char}"
+var_link_name="${char}1"
+link_name="${!var_link_name}"
+if [[ -n "$src_name" && -n "$link_name" ]]
+then echo "Linking $src_name to $link_name..."
+sudo ln -s "$scripts/$src_name" "$bin$link_name"
+fi
+done
+
 dot_delay & dot_delay & dot_delay
 echo "Linking Complete"
 echo "All scripts installed"
