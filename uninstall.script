@@ -1,0 +1,364 @@
+#!/bin/bash
+#
+#########################
+# variables
+BOLDRED='\033[1;31m'
+Error='\033[1;31m'
+Off='\033[0m'
+
+#
+#############################################
+### variables for current date ###
+currentDate=$(date "+%m-%d-%Y")
+repeatDate=$(date "+%m-%d-%Y.%T")
+#
+#############################################
+### variables for files/directories ###
+dir=`pwd`
+userHome=$(eval echo "~$SUDO_USER")
+scripts=$userHome/scripts
+bin=/bin/
+gitDir="RPi-Scripts-Scripts"
+scriptsDir="RPI-Scripts"
+gitDL="Scripts.zip"
+gitLink=$(curl -s https://api.github.com/repos/TROUBLESOM0/RPi-Scripts/releases/latest | grep "zipball_url" | cut -d '"' -f 4)
+GETVER=GETVERSION
+CUR_VER=""  #current version of download.script installed (see get_current_version() )
+LAT_VER=""  #latest version on Github (see get_latest_version() )
+LOG_FILE=$userHome/uninstall_scripts-$currentDate.log
+
+#
+##########################
+###   Remove_Scripts   ###
+##########################
+Remove_Scripts () {
+if [[ -d $myHome ]]
+then :
+else echo -e "]nYOU WILL NEED TO DELETE SCRIPTS FOLDER MANUALLY\n"
+return 0
+fi
+
+while true
+do
+read -r -p "Do you want to delete $myHome folder?(y/n)" scripts_input
+case $scripts_input in
+[yY][eE][sS]|[yY])
+rm -rf $myHome
+if [[ -d $myHome ]]
+then echo "Error deleting $myHome"
+else :
+fi
+break
+;;
+[nN][oO]|[nN])
+echo "++Cancelled"
+exit 1
+;;
+*)
+echo "+++[ERROR] Must enter (Y/n)"
+;;
+esac
+done
+}
+#
+########################
+###   Remove_Links   ###
+########################
+Remove_Links () {
+echo "Starting removal of links in /bin"
+
+echo "===================================="
+echo "Searching for install-[]-lists.sh..."
+# array if more than 1 file
+file_array=()
+while IFS= read -r -d $'\0' file
+do
+file_array+=("$file")
+done < <(find "$userHome/scripts" -maxdepth 1 -name "install-*-lists.sh" -print0)
+
+# check results
+if [ ${#file_array[@]} -eq 0 ]
+then echo -e "${Error}+++ERROR:${Off}No install-*-lists.sh file found."
+exit 1
+fi
+
+# single vs multiple files option
+if [ ${#file_array[@]} -eq 1 ]
+then IN_FILE="${file_array[0]}"
+printf "Found: %s\n" "$(basename "$IN_FILE")"
+else printf "Multiple versions found. Select one:\n"
+PS3="Choice: "
+# Show only the filenames (basename) in the menu
+select opt in "${file_array[@]}"
+do
+  if [ -n "$opt" ]
+  then IN_FILE="$opt"
+  break
+  else
+  printf "Invalid choice.\n"
+  fi
+done
+fi
+
+echo "Using $IN_FILE"
+echo "===================================="
+
+
+while IFS='=' read -r key value
+do
+if [[ -n "$key" ]]
+then
+declare "lnk_$key=$value" 2>/dev/null
+fi
+done < <(grep -E '^([a-z])\1*1=' "$IN_FILE")
+
+# List variables loaded
+#declare -p ${!lnk_*}
+#exit 0
+
+# check files exist
+for var_link in ${!lnk_*}
+do
+filelink="${!var_link}"
+if [[ ! -L "$bin$filelink" ]]
+then printf "File $bin$filelink missing, removing variable: %s (%s)\n" "$var_link" "$filelink"
+unset "$var_link"
+else
+echo "$filelink exists."
+fi
+done
+
+# remove links
+#loop thru remaining variables
+for var_link in ${!lnk_*}
+do
+filelink="${!var_link}"
+filepath="$bin$filelink"
+if [[ -L "$filepath" ]]
+then echo "--deleting $filelink"
+rm -f "$filepath"
+  if [[ -L $filepath ]]
+  then echo -e "${Error}+++ERROR:${Off} Unable to delete $filelink from /bin. Continuing script..."
+  else echo $filelink >> $LOG_FILE
+  fi
+fi
+done
+}
+#
+########################
+###   Remove_Files   ###
+########################
+Remove_Files () {
+echo "Starting removal of $myHome"
+echo "Searching for install-[]-lists.sh..."
+# array if more than 1 file
+file_array=()
+while IFS= read -r -d $'\0' file
+do
+file_array+=("$file")
+done < <(find "$userHome/scripts" -maxdepth 1 -name "install-*-lists.sh" -print0)
+
+# check results
+if [ ${#file_array[@]} -eq 0 ]
+then echo -e "${Error}+++ERROR:${Off}No install-*-lists.sh file found."
+exit 1
+fi
+
+# single vs multiple files option
+if [ ${#file_array[@]} -eq 1 ]
+then IN_FILE="${file_array[0]}"
+printf "Found: %s\n" "$(basename "$IN_FILE")"
+else printf "Multiple versions found. Select one:\n"
+PS3="Choice: "
+
+# Show only the filenames (basename) in the menu
+select opt in "${file_array[@]}"
+do
+  if [ -n "$opt" ]
+  then IN_FILE="$opt"
+  break
+  else
+  printf "Invalid choice.\n"
+  fi
+done
+fi
+
+echo "Using $IN_FILE"
+
+# create variables for list of scripts
+while IFS='=' read -r key value
+do
+if [[ -n "$key" ]]
+then
+declare "in_$key=$value" 2>/dev/null
+fi
+done < <(grep -E '^([a-z])\1*=' "$IN_FILE")
+
+# List variables loaded
+#declare -p ${!in_*}
+#exit 0
+
+# check files exist
+for var_name in ${!in_*}
+do
+filename="${!var_name}"
+if [[ ! -f "$myHome/$filename" ]]
+then printf "File missing, removing variable: %s (%s)\n" "$var_name" "$filename"
+unset "$var_name"
+else
+echo "$filename exists."
+fi
+done
+
+# remove files
+#loop thru remaining variables
+for var_name in ${!in_*}
+do
+filename="${!var_name}"
+filepath="$myHome/$filename"
+if [[ -f "$filepath" ]]
+then echo "--deleting $filename"
+rm -f "$filepath"
+  if [[ -f $filepath ]]
+  then echo -e "${Error}+++ERROR:${Off} Unable to delete $filename. Continuing script..."
+  else echo $filename >> $LOG_FILE
+  fi
+fi
+done
+}
+#
+#######################
+###   ASK_Removal   ###
+#######################
+ask_Removal () {
+if [[ -z $myHome ]]
+then
+read -p "Enter name of user's home directory to use (ex. pi): " username
+myHome="/home/$username/scripts"
+  if [[ -d $myHome ]]
+  then :
+  else echo -e "${Error}+++ERROR:${Off}No location found at $myHome."
+  exit 1
+  fi
+else :
+fi
+}
+#
+####################
+###   ASK_HOME   ###
+####################
+ask_Home () {
+if [[ -d $scripts ]]
+then echo "Found /scripts folder in $scripts..."
+while true
+do
+read -r -p "Do You Want To Uninstall from $userHome? [Y/n]" ask_home_input
+case $ask_home_input in
+[yY][eE][sS]|[yY])
+myHome=$scripts
+break
+;;
+[nN][oO]|[nN])
+break
+;;
+*)
+echo "+++[ERROR] Must enter (Y/n)"
+;;
+esac
+done
+
+else
+read -p "Enter name of user's home directory to use (ex. pi): " username
+myHome="/home/$username/scripts"
+  if [[ -d $myHome ]]
+  then :
+  else echo -e "${Error}+++ERROR:${Off}No location found at $myHome."
+  exit 1
+  fi
+fi
+}
+#
+######################
+###   ASK_DELETE   ###
+######################
+ask_Delete () {
+while true
+do
+read -r -p "Do You Want To Uninstall Scripts? [Y/n]" ask_delete_input
+case $ask_delete_input in
+[yY][eE][sS]|[yY])
+break
+;;
+[nN][oO]|[nN])
+echo "++Cancelled"
+exit 1
+;;
+*)
+echo "+++[ERROR] Must enter (Y/n)"
+;;
+esac
+done
+}
+#
+##############################
+###   GET_LATEST_VERSION   ###
+##############################
+get_latest_version () {
+if [[ -d $dir/$GETVER ]]
+then rm -r $dir/$GETVER
+fi
+mkdir $dir/$GETVER
+wget -qq -O $dir/$GETVER/$gitDL $gitLink
+if [[ ! -f $dir/$GETVER/$gitDL ]]
+then echo -e "${Error}+++ERROR:${Off} Failed to download or locate $dir/$GETVER/$gitDL after downloading."
+exit 1
+else unzip -qq $dir/$GETVER/$gitDL -d $dir/$GETVER/tmpDir/
+rm $dir/$GETVER/$gitDL
+mkdir $dir/$GETVER/$gitDir && mv $dir/$GETVER/tmpDir/*/* $dir/$GETVER/$gitDir/
+rm -r $dir/$GETVER/tmpDir
+fi
+if [[ ! -f $dir/$GETVER/$gitDir/Github_download.script ]]
+then echo -e "${Error}+++ERROR:${Off} Unable to locate Github_download.script from newly download to check LATEST VERSION"
+exit 1
+else
+LAT_VER=$(sed -n '3p' "$dir/$GETVER/$gitDir/Github_download.script" | cut -d ' ' -f 2)
+echo $LAT_VER
+fi
+rm -r $dir/$GETVER
+}
+#
+###############################
+###   GET_CURRENT_VERSION   ###
+###############################
+get_current_version () {
+if [[ -f $scripts/Github_download.script ]]
+then
+CUR_VER=$(sed -n '3p' "$scripts/Github_download.script" | cut -d ' ' -f 2)
+echo $CUR_VER
+else echo "${Error}+++ERROR:${Off} Unable to locate Github_download.script in $scripts"
+exit 1
+fi
+}
+#
+#############################################
+#              Begin Script                 #
+#############################################
+echo -e "\n${BOLDRED}This will completely remove the \"/scripts\" folder"
+echo -e "and all script links in \"/bin\".${Off}"
+echo -e "There will be an option to download the latest version from Github and install it.\n"
+echo "INSTALLED VERSION: $(get_current_version)"
+#echo "LATEST VERSION:    $(get_latest_version)"
+echo "BLOCKED LATEST VERSION FOR TESTING"
+
+
+ask_Delete
+ask_Home
+ask_Removal
+Remove_Files
+Remove_Links
+Remove_Scripts
+
+echo "COMPLETE"
+echo "There should be a log file created in users home directory:"
+echo "$LOG_FILE"
+exit 0
