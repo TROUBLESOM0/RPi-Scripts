@@ -344,10 +344,12 @@ else :
 fi
 
 if [ -d $dir$scriptsDir ]
-then rm -rf $dir$scriptsDir
+then echo "$dir$scriptsDir exists. need to delete"
+rm -rf $dir$scriptsDir
 fi
 if [ -f $dir/Github_download.script ]
-then rm -f $dir/Github_download.script
+then echo "$dir/Github_download.script exists. need todelete"
+rm -f $dir/Github_download.script
 fi
 }
 ############################
