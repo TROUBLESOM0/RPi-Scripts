@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# v3.7.9
+# v3.8.9
 #
 # Command to download Raspberry Pi Scripts package
 #
@@ -343,12 +343,10 @@ chown -R $SUDO_USER:$SUDO_USER $scripts
 else :
 fi
 
-if [ -d $dir$scriptsDir ]
-then echo "$dir$scriptsDir exists. need to delete"
-rm -rf $dir$scriptsDir
+if [ -d $dir/$scriptsDir ]
+rm -rf $dir/$scriptsDir
 fi
 if [ -f $dir/Github_download.script ]
-then echo "$dir/Github_download.script exists. need todelete"
 rm -f $dir/Github_download.script
 fi
 }
