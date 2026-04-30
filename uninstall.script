@@ -68,40 +68,40 @@ Remove_Links () {
 echo "Starting removal of links in /bin"
 
 echo "===================================="
-echo "Searching for install-[]-lists.sh..."
+#echo "Searching for install-[]-lists.sh..."
 # array if more than 1 file
 file_array=()
 while IFS= read -r -d $'\0' file
-do
-file_array+=("$file")
-done < <(find "$userHome/scripts" -maxdepth 1 -name "install-*-lists.sh" -print0)
+#do
+#file_array+=("$file")
+#done < <(find "$userHome/scripts" -maxdepth 1 -name "install-*-lists.sh" -print0)
 
 # check results
-if [ ${#file_array[@]} -eq 0 ]
-then echo -e "${Error}+++ERROR:${Off}No install-*-lists.sh file found."
-exit 1
-fi
+#if [ ${#file_array[@]} -eq 0 ]
+#then echo -e "${Error}+++ERROR:${Off}No install-*-lists.sh file found."
+#exit 1
+#fi
 
 # single vs multiple files option
-if [ ${#file_array[@]} -eq 1 ]
-then IN_FILE="${file_array[0]}"
-printf "Found: %s\n" "$(basename "$IN_FILE")"
-else printf "Multiple versions found. Select one:\n"
-PS3="Choice: "
+#if [ ${#file_array[@]} -eq 1 ]
+#then IN_FILE="${file_array[0]}"
+#printf "Found: %s\n" "$(basename "$IN_FILE")"
+#else printf "Multiple versions found. Select one:\n"
+#PS3="Choice: "
 # Show only the filenames (basename) in the menu
-select opt in "${file_array[@]}"
-do
-  if [ -n "$opt" ]
-  then IN_FILE="$opt"
-  break
-  else
-  printf "Invalid choice.\n"
-  fi
-done
-fi
+#select opt in "${file_array[@]}"
+#do
+ #if [ -n "$opt" ]
+ #then IN_FILE="$opt"
+  #break
+  #else
+  #printf "Invalid choice.\n"
+  #fi
+#done
+#fi
 
 echo "Using $IN_FILE"
-echo "===================================="
+#echo "===================================="
 
 
 while IFS='=' read -r key value
