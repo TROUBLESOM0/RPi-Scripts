@@ -32,7 +32,7 @@ bin=/bin/
 gitDir="RPi-Scripts-Scripts"
 scriptsDir="RPI-Scripts"
 gitDL="Scripts.zip"
-gitLink=$(curl -s https://api.github.com/repos/TROUBLESOM0/RPi-Scripts/releases/latest | grep "zipball_url" | cut -d '"' -f 4)
+gitLink=$(curl -sS https://api.github.com/repos/TROUBLESOM0/RPi-Scripts/releases/latest | grep "zipball_url" | cut -d '"' -f 4)
 # #FOR TESTING ONLY# gitLink=~/Public/Scripts.zip
 #
 #############################################
@@ -125,7 +125,7 @@ exit 0
 esac
 done
 }
-# 
+#
 #############################################
 ###                 UNZIP                 ###
 #############################################
@@ -178,7 +178,7 @@ case $dl_input in
 [yY][eE][sS]|[yY])
 echo "Downloading $gitDL"
 s1
-wget -O $gitDL $gitLink
+wget -qq --timeout=20 --tries=3 -O $gitDL $gitLink
 # #FOR TESTING ONLY# cp $gitLink $dir
 s1
 if test -f $gitDL
@@ -227,7 +227,7 @@ fi
 rm $gitDL
 s3
 echo "Downloading Scripts"
-wget -q $gitLink
+wget -q --timeout=20 --tries=3 $gitLink
 #wget "http://10.10.10.5:8000/Scripts"
 s1
 if test -f $gitDL
@@ -270,8 +270,8 @@ fi
 
 #if [[ -f $dir/$scriptsDir/$a && -f $dir/$scriptsDir/$b && -f $dir/$scriptsDir/$c && -f $dir/$scriptsDir/$d && -f $dir/$scriptsDir/$e && -f $dir/$scriptsDir/$f && -f $dir/$scriptsDir/$g && -f $dir/$scriptsDir/$h && -f $dir/$scriptsDir/$j ]]
 #then echo "All script files present. Ready to install scripts"
-#echo "Moving files to '$scripts'"
-#mv $dir/$scriptsDir/* $scripts
+echo "Copying files to '$scripts'"
+cp $dir/$scriptsDir/* $scripts
 #s1
 #dot_delay
 install_Scripts
@@ -287,14 +287,47 @@ install_Scripts
 # View install-[number]-lists.sh for scripts to be installed
 #
 install_Scripts () {
-if [ -f $scriptsDir/install-*-lists.sh ]
-then bash $scriptsDir/install-*-lists.sh
-else echo "ERROR:  Unable to locate install-[number]-lists.sh"
+
+echo "Searching for install file (install-[]-lists.sh)..."
+# array if more than 1 file
+file_array=()
+while IFS= read -r -d $'\0' file
+do
+file_array+=("$file")
+done < <(find "$userHome/scripts" -maxdepth 1 -name "install-*-lists.sh" -print0)
+
+# check results
+if [ ${#file_array[@]} -eq 0 ]
+then echo -e "${Error}+++ERROR:${Off}No install-*-lists.sh file found."
 exit 1
 fi
 
+# single vs multiple files option
+if [ ${#file_array[@]} -eq 1 ]
+then S_FILE="${file_array[0]}"
+printf "Found: %s\n" "$(basename "$S_FILE")"
+else printf "Multiple versions found. Select one:\n"
+PS3="Choice: "
 
+# Show only the filenames (basename) in the menu
+select opt in "${file_array[@]}"
+do
+  if [ -n "$opt" ]
+  then S_FILE="$opt"
+  break
+  else
+  printf "Invalid choice.\n"
+  fi
+done
+fi
 
+echo "Using $S_FILE"
+
+if [ -f $S_FILE ]
+then bash $S_FILE
+else echo "ERROR:  Unable to locate install-[number]-lists.sh"
+exit 1
+fi
 }
 
 ######################
