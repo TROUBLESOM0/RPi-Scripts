@@ -28,6 +28,22 @@ LAT_VER=""  #latest version on Github (see get_latest_version() )
 LOG_FILE=$userHome/uninstall_scripts-$currentDate.log
 
 #
+######################
+###   ASK_UPDATE   ###
+######################
+ask_Update () {
+read -r -p "Do you want to update to $LAT_VER now?" input_update
+if [[ "${input_update,,}" == "y" || "{input_update,,}" == "yes"
+then 
+  if [[ -f Github_download.script ]]
+  then rm -f Github_download.script
+  fi
+wget "https://github.com/TROUBLESOM0/RPi-Scripts/releases/latest/download/Github_download.script"
+bash Github_download.script
+else :
+fi
+}
+#
 ##########################
 ###   Remove_Scripts   ###
 ##########################
@@ -284,7 +300,7 @@ fi
 ask_Delete () {
 while true
 do
-read -r -p "Do You Want To Uninstall Scripts? [Y/n]" ask_delete_input
+read -r -p "Do You Want To Uninstall Scripts (option to update at end)? [Y/n]" ask_delete_input
 case $ask_delete_input in
 [yY][eE][sS]|[yY])
 break
@@ -369,7 +385,7 @@ fi
 #############################################
 echo -e "\n${BOLDRED}This will completely remove the \"/scripts\" folder"
 echo -e "and all script links in \"/bin\".${Off}"
-echo -e "There will be an option to download the latest version from Github and install it.\n"
+echo -e "There will be an option to download the latest version at the end.\n"
 echo "INSTALLED VERSION: $(get_current_version)"
 echo "LATEST VERSION:    $(get_latest_version)"
 
@@ -379,6 +395,7 @@ ask_Removal
 Remove_Files
 Remove_Links
 Remove_Scripts
+ask_Update
 
 echo "COMPLETE"
 echo "There should be a log file created in users home directory:"
