@@ -342,6 +342,12 @@ fi
 ############################
 #      Initial Checks      #
 ############################
+# Check script is running as root
+if [[ $( whoami ) != "root" ]]
+then echo -e "${Error}ERROR${Off} Must be run as sudo or root"
+exit 1
+fi
+#
 # Check if unzip is installed
 if type unzip &>/dev/null
 then : # continues script
