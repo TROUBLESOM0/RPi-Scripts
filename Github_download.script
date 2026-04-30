@@ -7,26 +7,8 @@
 ### Scripts to Install ###
 # a-j  [NOTE: CAN'T USE "i"]
 # when adding more, must update /COPY scripts/ function
-a=activeservices.list
-b=allpackages.list
-c=allservices.list
-d=hostip.list
-e=makewebserver
-f=matrix.sh
-g=systemctlenabled.list
-h=temp.sh
-j=usergrp.list
-#
-# this is what you want to call it in /bin/
-a1=activeservices
-b1=allpackages
-c1=allservices
-d1=hostip
-e1=makewebserver
-f1=matrix
-g1=systemctlenabled
-h1=temp
-j1=usergrp
+# **** MOVED TO EXTERNAL SCRIPT (install-[num]-lists.sh) ****
+
 #############################################
 ### sets sleep functions ###
 s () { sleep .5; }
