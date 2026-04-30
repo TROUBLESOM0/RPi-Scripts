@@ -344,10 +344,10 @@ else :
 fi
 
 if [ -d $dir/$scriptsDir ]
-rm -rf $dir/$scriptsDir
+then rm -rf $dir/$scriptsDir
 fi
 if [ -f $dir/Github_download.script ]
-rm -f $dir/Github_download.script
+then rm -f $dir/Github_download.script
 fi
 }
 ############################
