@@ -285,57 +285,17 @@ s5
 dot_delay
 echo "'$scripts' backed up to '$dir/bkup-scripts-$repeatDate'"
 fi
-echo "Checking if files are present in '$dir/$scriptsDir'"
-sleep 5
-dot_delay
-#cd $scriptsDir
-if [[ -f $dir/$scriptsDir/$a ]]
-then echo "$a"
-else echo "'$a' missing"
-fi
-if [[ -f $dir/$scriptsDir/$b ]]
-then echo "$b"
-else echo "'$b' missing"
-fi
-if [[ -f $dir/$scriptsDir/$c ]]
-then echo "$c"
-else echo "'$c' missing"
-fi
-if [[ -f $dir/$scriptsDir/$d ]]
-then echo "$d"
-else echo "'$d' missing"
-fi
-if [[ -f $dir/$scriptsDir/$e ]]
-then echo "$e"
-else echo "'$e' missing"
-fi
-if [[ -f $dir/$scriptsDir/$f ]]
-then echo "$f"
-else echo "'$f' missing"
-fi
-if [[ -f $dir/$scriptsDir/$g ]]
-then echo "$g"
-else echo "'$g' missing"
-fi
-if [[ -f $dir/$scriptsDir/$h ]]
-then echo "$h"
-else echo "'$h' missing"
-fi
-if [[ -f $dir/$scriptsDir/$j ]]
-then echo "$j"
-else echo "'$j' missing"
-fi
-char_repeat 20 "-"
-if [[ -f $dir/$scriptsDir/$a && -f $dir/$scriptsDir/$b && -f $dir/$scriptsDir/$c && -f $dir/$scriptsDir/$d && -f $dir/$scriptsDir/$e && -f $dir/$scriptsDir/$f && -f $dir/$scriptsDir/$g && -f $dir/$scriptsDir/$h && -f $dir/$scriptsDir/$j ]]
-then echo "All script files present. Ready to install scripts"
-echo "Moving files to '$scripts'"
-cd $dir/$scriptsDir && mv $a $b $c $d $e $f $g $h $j $scripts
-s1
-dot_delay
+
+#if [[ -f $dir/$scriptsDir/$a && -f $dir/$scriptsDir/$b && -f $dir/$scriptsDir/$c && -f $dir/$scriptsDir/$d && -f $dir/$scriptsDir/$e && -f $dir/$scriptsDir/$f && -f $dir/$scriptsDir/$g && -f $dir/$scriptsDir/$h && -f $dir/$scriptsDir/$j ]]
+#then echo "All script files present. Ready to install scripts"
+#echo "Moving files to '$scripts'"
+#mv $dir/$scriptsDir/* $scripts
+#s1
+#dot_delay
 install_Scripts
-else echo "Missing script files in $dir/$scriptsDir"
-s5
-fi
+#else echo "Missing script files in $dir/$scriptsDir"
+#s5
+#fi
 }
 #############################################
 ###                INSTALL                ###
@@ -355,88 +315,11 @@ fi
 #
 #
 install_Scripts () {
-echo "This will set permissions and install "
-s2
-### MOVING INTO ~/scripts
-#list=`ls -1`
-char_repeat 25 "."
-(cd $scripts; ls -1)
-dot_delay
-echo " scripts into '$bin'"
-dot_delay
-s5
-echo "Setting permissions and installing into '$bin'"
-s1
-chmod u+rwx,g+rwx,o+r $scripts/$a
-chmod u+rwx,g+rwx,o+r $scripts/$a $scripts/$b $scripts/$c $scripts/$d $scripts/$e $scripts/$f $scripts/$g $scripts/$h $scripts/$j
-if [[ -f $bin$a1 ]]
-then echo "Replacing '$bin/$a1'"
-sudo rm $bin$a1
-echo "removed '$a1'"
-else dot_delay
-fi
 
-if [[ -f $bin$b1 ]]
-then echo "Replacing '$bin/$b1'"
-sudo rm $bin$b1
-echo "removed '$b1'"
-else dot_delay
-fi
 
-if [[ -f $bin$c1 ]]
-then echo "Replacing '$bin/$c1'"
-sudo rm $bin$c1
-echo "removed '$c1'"
-else dot_delay
-fi
 
-if [[ -f $bin$d1 ]]
-then echo "Replacing '$bin/$d1'"
-sudo rm $bin$d1
-echo "removed '$d1'"
-else dot_delay
-fi
 
-if [[ -f $bin$e1 ]]
-then echo "Replacing '$bin/$e1'"
-sudo rm $bin$e1
-echo "removed '$e1'"
-else dot_delay
-fi
 
-if [[ -f $bin$f1 ]]
-then echo "Replacing '$bin/$f1'"
-sudo rm $bin$f1
-echo "removed '$f1'"
-else dot_delay
-fi
-
-if [[ -f $bin$g1 ]]
-then echo "Replacing '$bin/$g1'"
-sudo rm $bin$g1
-echo "removed '$g1'"
-else dot_delay
-fi
-
-if [[ -f $bin$h1 ]]
-then echo "Replacing '$bin/$h1'"
-sudo rm $bin$h1
-echo "removed '$h1'"
-else dot_delay
-fi
-
-if [[ -f $bin$j1 ]]
-then echo "Replacing '$bin/$j1'"
-sudo rm $bin$j1
-echo "removed '$j1'"
-else dot_delay
-fi
-
-echo "Linking......."
-sudo ln -s $scripts/$a $bin$a1 && sudo ln -s $scripts/$b $bin$b1 && sudo ln -s $scripts/$c $bin$c1 && sudo ln -s $scripts/$d $bin$d1 && sudo ln -s $scripts/$e $bin$e1 && sudo ln -s $scripts/$f $bin$f1 && sudo ln -s $scripts/$g $bin$g1 && sudo ln -s $scripts/$h $bin$h1 && sudo ln -s $scripts/$j $bin$j1
-dot_delay & dot_delay & dot_delay
-echo "Linking Complete"
-echo "All scripts installed"
 }
 
 ######################
