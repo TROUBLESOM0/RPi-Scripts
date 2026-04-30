@@ -339,6 +339,24 @@ else echo "${Error}+++ERROR:${Off} Unable to locate Github_download.script in $s
 exit 1
 fi
 }
+############################
+#      Initial Checks      #
+############################
+# Check if unzip is installed
+if type unzip &>/dev/null
+then : # continues script
+else
+echo "ERROR unzip is not installed"
+exit 1
+fi
+#
+# Check if curl is installed
+if type curl &>/dev/null
+then : # continues script
+else
+echo "ERROR curl is not installed"
+exit 1
+fi
 #
 #############################################
 #              Begin Script                 #
@@ -347,9 +365,7 @@ echo -e "\n${BOLDRED}This will completely remove the \"/scripts\" folder"
 echo -e "and all script links in \"/bin\".${Off}"
 echo -e "There will be an option to download the latest version from Github and install it.\n"
 echo "INSTALLED VERSION: $(get_current_version)"
-#echo "LATEST VERSION:    $(get_latest_version)"
-echo "BLOCKED LATEST VERSION FOR TESTING"
-
+echo "LATEST VERSION:    $(get_latest_version)"
 
 ask_Delete
 ask_Home
