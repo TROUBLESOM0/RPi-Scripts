@@ -305,8 +305,8 @@ install_Scripts
 # View install-[number]-lists.sh for scripts to be installed
 #
 install_Scripts () {
-if [ -f install-*-lists.sh ]
-then bash install-*-lists.sh
+if [ -f $scriptsDir/install-*-lists.sh ]
+then bash $scriptsDir/install-*-lists.sh
 else echo "ERROR:  Unable to locate install-[number]-lists.sh"
 exit 1
 fi
