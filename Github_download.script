@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# v3.0.9
+# v3.1.9
 #
 # Command to download Raspberry Pi Scripts package
 #
@@ -50,7 +50,7 @@ bin=/bin/
 gitDir="RPi-Scripts-Scripts"
 scriptsDir="RPI-Scripts"
 gitDL="Scripts.zip"
-gitLink="https://github.com/TROUBLESOM0/RPi-Scripts/archive/refs/heads/Scripts.zip"
+gitLink=$(curl -s https://api.github.com/repos/TROUBLESOM0/RPi-Scripts/releases/latest | grep "zipball_url" | cut -d '"' -f 4)
 # #FOR TESTING ONLY# gitLink=~/Public/Scripts.zip
 #
 #############################################
@@ -196,13 +196,20 @@ case $dl_input in
 [yY][eE][sS]|[yY])
 echo "Downloading $gitDL"
 s1
-wget -q $gitLink
+wget -O $gitDL $gitLink
 # #FOR TESTING ONLY# cp $gitLink $dir
 s1
 if test -f $gitDL
 then char_repeat 25 "-"
 echo "Download successful"
 char_repeat 25 "-"
+mkdir tmpDir
+unzip -qq $gitDL -d tmpDir/
+rm $gitDL
+mkdir $gitDir && mv tmpDir/*/* $gitDir/
+rm -r tmpDir
+zip -qq -r $gitDL $gitDir/
+rm -r $gitDir
 ask_Unzip
 else echo "Error downloading"
 fi
