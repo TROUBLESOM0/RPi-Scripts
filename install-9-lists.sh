@@ -93,42 +93,18 @@ echo "Checking if files are present in '$dir/$scriptsDir'"
 sleep 5
 dot_delay
 char_repeat 20 "-"
-if [[ -f $dir/$scriptsDir/$a ]]
-then echo "$a"
-else echo "'$a' missing"
+
+# loop thru variables a-z
+for var in {a..z}
+do
+val="${!var}"
+#skip if empty or i
+[[ -z "$val" || "$var" == "i" ]] && continue
+if [[ -f $dir/$scriptsDir/$val ]]
+then echo "$val"
+else echo "'$val' missing"
 fi
-if [[ -f $dir/$scriptsDir/$b ]]
-then echo "$b"
-else echo "'$b' missing"
-fi
-if [[ -f $dir/$scriptsDir/$c ]]
-then echo "$c"
-else echo "'$c' missing"
-fi
-if [[ -f $dir/$scriptsDir/$d ]]
-then echo "$d"
-else echo "'$d' missing"
-fi
-if [[ -f $dir/$scriptsDir/$e ]]
-then echo "$e"
-else echo "'$e' missing"
-fi
-if [[ -f $dir/$scriptsDir/$f ]]
-then echo "$f"
-else echo "'$f' missing"
-fi
-if [[ -f $dir/$scriptsDir/$g ]]
-then echo "$g"
-else echo "'$g' missing"
-fi
-if [[ -f $dir/$scriptsDir/$h ]]
-then echo "$h"
-else echo "'$h' missing"
-fi
-if [[ -f $dir/$scriptsDir/$j ]]
-then echo "$j"
-else echo "'$j' missing"
-fi
+done
 
 echo "This will set permissions and install "
 
@@ -136,15 +112,29 @@ s2
 ### MOVING INTO ~/scripts
 #list=`ls -1`
 char_repeat 25 "."
-(cd $scripts; ls -1)
+for char in {a..z}
+do
+value="${!char}"
+if [ -n "$value" ]
+then echo "$value"
+fi
+done
 dot_delay
 echo " scripts into '$bin'"
 dot_delay
 s5
 echo "Setting permissions and installing into '$bin'"
 s1
-chmod u+rwx,g+rwx,o+r $scripts/$a
-chmod u+rwx,g+rwx,o+r $scripts/$a $scripts/$b $scripts/$c $scripts/$d $scripts/$e $scripts/$f $scripts/$g $scripts/$h $scripts/$j
+
+# loop thru variables a-z
+for var in {a..z}
+do
+val="${!var}"
+#skip if empty or i
+[[ -z "$val" || "$var" == "i" ]] && continue
+chmod u+rwx,g+rwx,o+r $scripts/$val
+done
+#chmod u+rwx,g+rwx,o+r $scripts/$a $scripts/$b $scripts/$c $scripts/$d $scripts/$e $scripts/$f $scripts/$g $scripts/$h $scripts/$j
 
 if [[ -f $bin$a1 ]]
 then echo "Replacing '$bin/$a1'"
