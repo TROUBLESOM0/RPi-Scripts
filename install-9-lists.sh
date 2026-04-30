@@ -85,7 +85,10 @@ done
 echo
 }
 #
-
+#
+#############################################
+#              Begin Script                 #
+#############################################
 echo "Checking if files are present in '$dir/$scriptsDir'"
 sleep 5
 dot_delay
