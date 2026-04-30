@@ -59,9 +59,7 @@ bin=/bin/
 gitDir="RPi-Scripts-Scripts"
 scriptsDir="RPI-Scripts"
 gitDL="Scripts.zip"
-gitLink=$(curl -s 
-https://api.github.com/repos/TROUBLESOM0/RPi-Scripts/releases/latest | 
-grep "zipball_url" | cut -d '"' -f 4)
+gitLink=$(curl -s https://api.github.com/repos/TROUBLESOM0/RPi-Scripts/releases/latest | grep "zipball_url" | cut -d '"' -f 4)
 # #FOR TESTING ONLY# gitLink=~/Public/Scripts.zip
 #
 #############################################
@@ -132,11 +130,7 @@ then echo "$j"
 else echo "'$j' missing"
 fi
 
-
-
 echo "This will set permissions and install "
-
-
 
 s2
 ### MOVING INTO ~/scripts
@@ -150,12 +144,7 @@ s5
 echo "Setting permissions and installing into '$bin'"
 s1
 chmod u+rwx,g+rwx,o+r $scripts/$a
-chmod u+rwx,g+rwx,o+r $scripts/$a $scripts/$b $scripts/$c $scripts/$d 
-$scripts/$e $scripts/$f $scripts/$g $scripts/$h $scripts/$j
-
-
-
-
+chmod u+rwx,g+rwx,o+r $scripts/$a $scripts/$b $scripts/$c $scripts/$d $scripts/$e $scripts/$f $scripts/$g $scripts/$h $scripts/$j
 
 if [[ -f $bin$a1 ]]
 then echo "Replacing '$bin/$a1'"
@@ -220,30 +209,21 @@ echo "removed '$j1'"
 else dot_delay
 fi
 
-
-
 echo "Linking......."
-sudo ln -s $scripts/$a $bin$a1 && sudo ln -s $scripts/$b $bin$b1 && sudo 
-ln -s $scripts/$c $bin$c1 && sudo ln -s $scripts/$d $bin$d1 && sudo ln -s 
-$scripts/$e $bin$e1 && sudo ln -s $scripts/$f $bin$f1 && sudo ln -s 
-$scripts/$g $bin$g1 && sudo ln -s $scripts/$h $bin$h1 && sudo ln -s 
-$scripts/$j $bin$j1
+sudo ln -s $scripts/$a $bin$a1 && \
+sudo ln -s $scripts/$b $bin$b1 && \
+sudo ln -s $scripts/$c $bin$c1 && \
+sudo ln -s $scripts/$d $bin$d1 && \
+sudo ln -s $scripts/$e $bin$e1 && \
+sudo ln -s $scripts/$f $bin$f1 && \
+sudo ln -s $scripts/$g $bin$g1 && \
+sudo ln -s $scripts/$h $bin$h1 && \
+sudo ln -s $scripts/$j $bin$j1
 dot_delay & dot_delay & dot_delay
 echo "Linking Complete"
 echo "All scripts installed"
 
-#echo "activeservices\n allpackages\n allservices\n hostip\n matrix\n 
-makewebserver\n systemctlenabled\n temp\n usergrp\n "
+#echo "activeservices\n allpackages\n allservices\n hostip\n matrix\n makewebserver\n systemctlenabled\n temp\n usergrp\n "
 #echo "----------------------------------------------------"
-#sudo chmod u+rwx,g+rwx,o+r activeservices.list allpackages.list 
-allservices.list hostip.list matrix.sh makewebserver systemctlenabled.list 
-temp.sh usergrp.list
-#sudo ln -s ~/scripts/activeservices.list /bin/activeservices && sudo ln 
--s ~/scripts/allpackages.list /bin/allpackages && sudo ln -s 
-~/scripts/allservices.list /bin/allservices && sudo ln -s 
-~/scripts/hostip.list /bin/hostip && sudo ln -s ~/scripts/matrix.sh 
-/bin/matrix && sudo ln -s ~/scripts/makewebserver /bin/makewebserver && 
-sudo ln -s ~/scripts/systemctlenabled.list /bin/systemctlenabled && sudo 
-ln -s ~/scripts/temp.sh /bin/temp && sudo ln -s ~/scripts/usergrp.list 
-/bin/usergrp
+#sudo chmod u+rwx,g+rwx,o+r activeservices.list allpackages.list allservices.list hostip.list matrix.sh makewebserver systemctlenabled.list temp.sh usergrp.list sudo ln -s ~/scripts/activeservices.list /bin/activeservices && sudo ln -s ~/scripts/allpackages.list /bin/allpackages && sudo ln -s ~/scripts/allservices.list /bin/allservices && sudo ln -s ~/scripts/hostip.list /bin/hostip && sudo ln -s ~/scripts/matrix.sh /bin/matrix && sudo ln -s ~/scripts/makewebserver /bin/makewebserver && sudo ln -s ~/scripts/systemctlenabled.list /bin/systemctlenabled && sudo ln -s ~/scripts/temp.sh /bin/temp && sudo ln -s ~/scripts/usergrp.list /bin/usergrp
 #echo "All scripts installed"
