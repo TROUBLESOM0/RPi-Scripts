@@ -26,6 +26,7 @@ GETVER=GETVERSION
 CUR_VER=""  #current version of download.script installed (see get_current_version() )
 LAT_VER=""  #latest version on Github (see get_latest_version() )
 LOG_FILE=$userHome/uninstall_scripts-$currentDate.log
+DLscript="Scripts_download.sh"
 
 #
 ######################
@@ -35,11 +36,11 @@ ask_Update () {
 read -r -p "Do you want to update to $LAT_VER now?" input_update
 if [[ "${input_update,,}" == "y" || "${input_update,,}" == "yes" ]]
 then echo ""
-  if [[ -f Github_download.script ]]
-  then rm -f Github_download.script
+  if [[ -f $DLscript ]]
+  then rm -f $DLscript
   fi
-  if wget "https://github.com/TROUBLESOM0/RPi-Scripts/releases/latest/download/Github_download.script"
-  then bash Github_download.script
+  if wget "https://github.com/TROUBLESOM0/RPi-Scripts/releases/latest/download/$DLscript"
+  then bash $DLscript
   else echo "ERROR DOWNLOADING"
   fi
 else :
@@ -337,11 +338,11 @@ rm $dir/$GETVER/$gitDL
 mkdir $dir/$GETVER/$gitDir && mv $dir/$GETVER/tmpDir/*/* $dir/$GETVER/$gitDir/
 rm -r $dir/$GETVER/tmpDir
 fi
-if [[ ! -f $dir/$GETVER/$gitDir/Github_download.script ]]
-then echo -e "${Error}+++ERROR:${Off} Unable to locate Github_download.script from newly download to check LATEST VERSION"
+if [[ ! -f $dir/$GETVER/$gitDir/$DLscript ]]
+then echo -e "${Error}+++ERROR:${Off} Unable to locate $DLscript from newly download to check LATEST VERSION"
 exit 1
 else
-LAT_VER=$(sed -n '3p' "$dir/$GETVER/$gitDir/Github_download.script" | cut -d ' ' -f 2)
+LAT_VER=$(sed -n '3p' "$dir/$GETVER/$gitDir/$DLscript" | cut -d ' ' -f 2)
 echo $LAT_VER
 fi
 rm -r $dir/$GETVER
@@ -351,11 +352,11 @@ rm -r $dir/$GETVER
 ###   GET_CURRENT_VERSION   ###
 ###############################
 get_current_version () {
-if [[ -f $scripts/Github_download.script ]]
+if [[ -f $scripts/$DLscript ]]
 then
-CUR_VER=$(sed -n '3p' "$scripts/Github_download.script" | cut -d ' ' -f 2)
+CUR_VER=$(sed -n '3p' "$scripts/$DLscript" | cut -d ' ' -f 2)
 echo $CUR_VER
-else echo "${Error}+++ERROR:${Off} Unable to locate Github_download.script in $scripts"
+else echo "${Error}+++ERROR:${Off} Unable to locate $DLscript in $scripts"
 exit 1
 fi
 }
