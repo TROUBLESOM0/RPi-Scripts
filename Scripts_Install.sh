@@ -83,7 +83,7 @@ fi
 # Figlet required
 type figlet &> /dev/null
 if [[ $? -eq 0 ]]
-then ;
+then :
 else echo "Installing figlet..."
 apt install figlet
 fi
