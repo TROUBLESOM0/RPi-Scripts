@@ -87,7 +87,7 @@ then :
 else echo "Installing figlet..."
 apt install figlet
 fi
-type figlet $> /dev/null && echo "" || echo "Figlet not found, but continue install."
+type figlet &> /dev/null && echo "" || echo "Figlet not found, but continue install."
 
 mv $scripts/$motd_file /etc/update-motd.d/$motd_file
 chown root:root /etc/update-motd.d/$motd_file
