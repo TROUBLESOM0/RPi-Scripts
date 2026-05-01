@@ -33,13 +33,15 @@ LOG_FILE=$userHome/uninstall_scripts-$currentDate.log
 ######################
 ask_Update () {
 read -r -p "Do you want to update to $LAT_VER now?" input_update
-if [[ "${input_update,,}" == "y" || "{input_update,,}" == "yes"
-then 
+if [[ "${input_update,,}" == "y" || "${input_update,,}" == "yes" ]]
+then echo ""
   if [[ -f Github_download.script ]]
   then rm -f Github_download.script
   fi
-wget "https://github.com/TROUBLESOM0/RPi-Scripts/releases/latest/download/Github_download.script"
-bash Github_download.script
+  if wget "https://github.com/TROUBLESOM0/RPi-Scripts/releases/latest/download/Github_download.script"
+  then bash Github_download.script
+  else echo "ERROR DOWNLOADING"
+  fi
 else :
 fi
 }
@@ -150,6 +152,7 @@ for var_link in ${!lnk_*}
 do
 filelink="${!var_link}"
 filepath="$bin$filelink"
+
 if [[ -L "$filepath" ]]
 then echo "--deleting $filelink"
 rm -f "$filepath"
@@ -158,6 +161,7 @@ rm -f "$filepath"
   else echo $filelink >> $LOG_FILE
   fi
 fi
+
 done
 }
 #
