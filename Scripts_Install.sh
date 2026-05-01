@@ -60,6 +60,28 @@ echo
 }
 #
 ############################
+###   INSTALL_10-UNAME   ###
+############################
+install_10-uname () {
+if [[ -f $scripts/10-uname ]]
+then echo "Installing MOTD..."
+else echo -e "${Error}ERROR${Off} Unable to find 10-uname. Not installing MOTD."
+return 0
+fi
+if [[ -d /etc/update-motd.d ]]
+then :
+else echo -e "${Error}ERROR${Off} update-motd.d not available."
+return 0
+fi
+if [[ -f /etc/update-motd.d/10-uname ]]
+then mv /etc/update-motd.d/10-uname $scripts/original.10-uname
+fi
+mv $scripts/10-uname /etc/update-motd.d/10-uname
+chown root:root /etc/update-motd.d/10-uname
+chmod 755 /etc/update-motd.d/10-uname
+}
+#
+############################
 ###   ASK_INSTALLUNZIP   ###
 ############################
 ask_Installunzip () {
@@ -152,13 +174,13 @@ rm $gitDL
 s1
 echo "Deleted Scripts.zip"
 s3
-cp_Scripts
+#cp_Scripts
 break
 ;;
 [nN][oO]|[nN])
 echo "Keeping Scripts.zip"
 chown $SUDO_USER:$SUDO_USER $gitDL
-cp_Scripts
+#cp_Scripts
 break
 ;;
 *)
@@ -193,14 +215,14 @@ mkdir $gitDir && mv tmpDir/*/* $gitDir/
 rm -r tmpDir
 zip -qq -r $gitDL $gitDir/
 rm -r $gitDir
-ask_Unzip
+#ask_Unzip
 else echo "Error downloading"
 fi
 break
 ;;
 [nN][oO]|[nN])
 echo "Download Cancelled"
-break
+exit 0
 ;;
 *)
 echo "Must enter [Y/n]"
@@ -235,7 +257,7 @@ if test -f $gitDL
 then char_repeat 25 "-"
 echo "Download successful."
 char_repeat 25 "-"
-ask_Unzip
+#ask_Unzip
 else echo "Error Downloading"
 fi
 break
@@ -275,7 +297,7 @@ echo "Copying files to '$scripts'"
 cp $dir/$scriptsDir/* $scripts
 #s1
 #dot_delay
-install_Scripts
+#install_Scripts
 #else echo "Missing script files in $dir/$scriptsDir"
 #s5
 #fi
@@ -386,8 +408,15 @@ if test -f $gitDL
 then echo "$gitDL file already exists"
 s1
 ask_Replace
+ask_Unzip
+cp_Scripts
+install_Scripts
 else ask_DL
+ask_Unzip
+cp_Scripts
+install_Scripts
 fi
+install_10-uname
 clean_Up
 echo "ENDING"
 #########################################
