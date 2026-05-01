@@ -88,8 +88,8 @@ echo "Starting removal of links in /bin"
 echo "===================================="
 #echo "Searching for install-[]-lists.sh..."
 # array if more than 1 file
-file_array=()
-while IFS= read -r -d $'\0' file
+#file_array=()
+#while IFS= read -r -d $'\0' file
 #do
 #file_array+=("$file")
 #done < <(find "$userHome/scripts" -maxdepth 1 -name "install-*-lists.sh" -print0)
