@@ -79,6 +79,16 @@ then :
 else echo -e "${Error}ERROR${Off} update-motd.d not found."
 return 0
 fi
+
+# Figlet required
+type figlet &> /dev/null
+if [[ $? -eq 0 ]]
+then ;
+else echo "Installing figlet..."
+apt install figlet
+fi
+type figlet $> /dev/null && echo "" || echo "Figlet not found, but continue install."
+
 mv $scripts/$motd_file /etc/update-motd.d/$motd_file
 chown root:root /etc/update-motd.d/$motd_file
 chmod 755 /etc/update-motd.d/$motd_file
@@ -305,6 +315,7 @@ cp $dir/$scriptsDir/* $scripts
 #s5
 #fi
 }
+#
 #############################################
 ###                INSTALL                ###
 #############################################
@@ -355,7 +366,34 @@ else echo "ERROR:  Unable to locate install-[number]-lists.sh"
 exit 1
 fi
 }
+#
+##########################
+#      ask_Check-OS      #
+##########################
+ask_Check-OS () {
+if [[ -f /etc/os-release ]]
+then :
+else
+echo "++Unable to get OS Version from os-release++"
+echo -e "++Will continue but may have compatibility issues++\n"
+fi
 
+os_version=$(cat /etc/os-release | grep VERSION_CODENAME | cut -d '=' -f2)
+
+if [[ $os_version = "buster" ]]
+then echo -e "OS Version: Buster (compatible)\n"
+elif [[ $os_version = "bullseye" ]]
+then echo -e "OS Version: Bullseye (compatible)\n"
+elif [[ $os_version = "bookworm" ]]
+then echo -e "OS Version: Bookworm (compatible)\n"
+elif [[ $os_version = "" ]]
+then echo "OS Version (not-found): $os_version (non-compatible)"
+echo -e "Will continue installation, but may be issues\n"
+else echo -e "OS Version: $os_version may not be compatible, but will continue installation\n"
+fi
+
+}
+#
 ######################
 #      CLEAN_UP      #
 ######################
@@ -410,11 +448,13 @@ fi
 if test -f $gitDL
 then echo "$gitDL file already exists"
 s1
+ask_Check_OS
 ask_Replace
 ask_Unzip
 cp_Scripts
 install_Scripts
-else ask_DL
+else ask_Check-OS
+ask_DL
 ask_Unzip
 cp_Scripts
 install_Scripts
