@@ -60,10 +60,15 @@ done
 echo
 }
 #
-############################
-###   INSTALL_10-UNAME   ###
-############################
-install_10-uname () {
+########################
+###   INSTALL_MOTD   ###
+########################
+install_MOTD () {
+read -r -p "Do you want to install 90-script to MOTD?" input_motd
+if [[ "${input_motd,,}" == "y" || "${input_motd,,}" == "yes" ]]
+then :
+else return 0
+fi
 if [[ -f $scripts/$motd_file ]]
 then echo "Installing MOTD..."
 else echo -e "${Error}ERROR${Off} Unable to find $motd_file. Not installing MOTD."
@@ -414,7 +419,7 @@ ask_Unzip
 cp_Scripts
 install_Scripts
 fi
-install_10-uname
+install_MOTD
 clean_Up
 echo "ENDING"
 #########################################
