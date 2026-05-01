@@ -26,7 +26,7 @@ GETVER=GETVERSION
 CUR_VER=""  #current version of download.script installed (see get_current_version() )
 LAT_VER=""  #latest version on Github (see get_latest_version() )
 LOG_FILE=$userHome/uninstall_scripts-$currentDate.log
-DLscript="Scripts_download.sh"
+DLscript="Scripts_Install.sh"
 
 #
 ######################
