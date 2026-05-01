@@ -34,6 +34,7 @@ scriptsDir="RPI-Scripts"
 gitDL="Scripts.zip"
 gitLink=$(curl -sS https://api.github.com/repos/TROUBLESOM0/RPi-Scripts/releases/latest | grep "zipball_url" | cut -d '"' -f 4)
 DLscript="Scripts_Install.sh"
+motd_file="90-script"
 # #FOR TESTING ONLY# gitLink=~/Public/Scripts.zip
 #
 #############################################
@@ -63,22 +64,19 @@ echo
 ###   INSTALL_10-UNAME   ###
 ############################
 install_10-uname () {
-if [[ -f $scripts/10-uname ]]
+if [[ -f $scripts/$motd_file ]]
 then echo "Installing MOTD..."
-else echo -e "${Error}ERROR${Off} Unable to find 10-uname. Not installing MOTD."
+else echo -e "${Error}ERROR${Off} Unable to find $motd_file. Not installing MOTD."
 return 0
 fi
 if [[ -d /etc/update-motd.d ]]
 then :
-else echo -e "${Error}ERROR${Off} update-motd.d not available."
+else echo -e "${Error}ERROR${Off} update-motd.d not found."
 return 0
 fi
-if [[ -f /etc/update-motd.d/10-uname ]]
-then mv /etc/update-motd.d/10-uname $scripts/original.10-uname
-fi
-mv $scripts/10-uname /etc/update-motd.d/10-uname
-chown root:root /etc/update-motd.d/10-uname
-chmod 755 /etc/update-motd.d/10-uname
+mv $scripts/$motd_file /etc/update-motd.d/$motd_file
+chown root:root /etc/update-motd.d/$motd_file
+chmod 755 /etc/update-motd.d/$motd_file
 }
 #
 ############################
