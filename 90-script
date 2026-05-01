@@ -14,11 +14,6 @@ UNDERLINE='\e[4m'
 END='\033[0m'
 ENDUNDERLINE='\e[24m'
 
-if [ -n "$SSH_CLIENT" ]
-then
-addr=($SSH_CLIENT)
-else :
-fi
 wifi=`iwgetid | cut -d "\"" -f 2`
 ip=`hostip`
 host=`hostname`
@@ -48,9 +43,3 @@ echo "$ip"
 echo ""
 echo -e "${UNDERLINE}Packages Recently Installed:${ENDUNDERLINE}" "${CYANBG}""$(cat /var/log/dpkg.log | grep -wc install)\e[0m"
 echo "-------------------------------------"
-#echo -e "SSH"": "$(awk '{print $1}' ~/scripts/sshclient.list)\
-#$(echo -e " OUT"": "$(awk '{print $2}' ~/scripts/sshclient.list))\
-#$(echo -e " IN"": "$(awk '{print $3}' ~/scripts/sshclient.list))
-echo "SSH: ${addr[0]} IN: ${addr[1]} OUT: ${addr[2]}"
-echo "-------------------------------------"
-#echo $(~/scripts/sshclient.list)
