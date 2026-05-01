@@ -33,6 +33,7 @@ gitDir="RPi-Scripts-Scripts"
 scriptsDir="RPI-Scripts"
 gitDL="Scripts.zip"
 gitLink=$(curl -sS https://api.github.com/repos/TROUBLESOM0/RPi-Scripts/releases/latest | grep "zipball_url" | cut -d '"' -f 4)
+DLscript="Scripts_download.sh"
 # #FOR TESTING ONLY# gitLink=~/Public/Scripts.zip
 #
 #############################################
@@ -346,8 +347,8 @@ fi
 if [ -d $dir/$scriptsDir ]
 then rm -rf $dir/$scriptsDir
 fi
-if [ -f $dir/Scripts_download.sh ]
-then rm -f $dir/Scripts_download.sh
+if [ -f $dir/$DLscript ]
+then rm -f $dir/$DLscript
 fi
 }
 ############################
