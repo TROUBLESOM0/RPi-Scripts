@@ -346,8 +346,8 @@ fi
 if [ -d $dir/$scriptsDir ]
 then rm -rf $dir/$scriptsDir
 fi
-if [ -f $dir/Github_download.script ]
-then rm -f $dir/Github_download.script
+if [ -f $dir/Scripts_download.sh ]
+then rm -f $dir/Scripts_download.sh
 fi
 }
 ############################
