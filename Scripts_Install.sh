@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# v4.5.9
+# v4.6.9
 #
 # Command to download Raspberry Pi Scripts package
 #
@@ -92,6 +92,40 @@ type figlet &> /dev/null && echo "" || echo "Figlet not found, but continue inst
 mv $scripts/$motd_file /etc/update-motd.d/$motd_file
 chown root:root /etc/update-motd.d/$motd_file
 chmod 755 /etc/update-motd.d/$motd_file
+}
+#
+############################
+###   ASK_INSTALLZIP   ###
+############################
+ask_Installzip () {
+while true
+do
+read -r -p "Do You Want To Install zip? [Y/n]" ask_zip_input
+case $ask_zip_input in
+[yY][eE][sS]|[yY])
+echo "Installing zip"
+s
+sudo apt install zip -y -qq > /dev/null
+s
+if type zip &>/dev/null
+then :
+else
+echo "zip installation failed. Try installing manually with sudo apt install zip"
+exit 1
+fi
+break
+;;
+[nN][oO]|[nN])
+echo "Install Cancelled"
+break
+;;
+*)
+echo "Must enter [Y/n]"
+s
+exit 0
+;;
+esac
+done
 }
 #
 ############################
@@ -424,13 +458,20 @@ then echo -e "${Error}ERROR${Off} Must be run as sudo or root"
 exit 1
 fi
 #
-# Check if unzip is installed
+# Check if zip/unzip is installed
 if type unzip &>/dev/null
 then : # continues script
 else
 echo "ERROR unzip is not installed"
 ask_Installunzip
-echo "unzip install complete"
+echo "zip install complete"
+fi
+if type zip &>/dev/null
+then : # continues script
+else
+echo "ERROR zip is not installed"
+ask_Installzip
+echo "zip install complete"
 fi
 #
 # Check if curl is installed
