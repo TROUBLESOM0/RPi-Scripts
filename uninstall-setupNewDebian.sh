@@ -6,6 +6,28 @@
 userHome=$(eval echo "~$SUDO_USER")
 docksc="$userHome/docker_sc"
 #
+############
+## RM_MOTD##
+############
+rm_MOTD () {
+echo ""
+read -r -p "Remove MOTD (90-script)? [y/N]" key_input
+#convert to lowercase
+key_input="${key_input,,}"
+if [[ "$key_input" == "y" || "$key_input" == "yes" ]]
+then :
+else return 0
+fi
+if [[ -f /etc/update-motd.d/90-script ]]
+then rm /etc/update-motd.d/90-script
+else echo "90-script not found in /etc/update-motd.d"
+fi
+if [[ -f /etc/update-motd.d/90-script ]]
+then echo "90-script removed"
+else echo "90-script failed to remove from /etc/update-motd.d"
+fi
+}
+#
 ######################
 ## UNINSTALL_SSH-KEY##
 ######################
@@ -106,3 +128,4 @@ uninstall_Docker
 ask_Host
 ask_DelUser
 uninstall_SSH-KEY
+rm_MOTD
