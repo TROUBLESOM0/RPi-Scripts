@@ -24,7 +24,7 @@ h=$((${raw}/3600%24))
 d=$((${raw}/86400))
 uptime=`printf "%d days, %02dh%02dm%02ds" "$d" "$h" "$m" "$s"`
 mem=`free | grep Mem | awk '{print $4/1024}'`
-fr=`df -h | awk 'FNR == 2 {print $4}' | tr -d G`
+fr=`df -h ~ | awk 'FNR == 2 {print $4}' | tr -d G`
 
 figlet -f digital $host
 echo "UNIT" $(grep Model /proc/cpuinfo | cut -f 3)
