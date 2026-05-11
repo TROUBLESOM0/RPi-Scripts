@@ -210,12 +210,15 @@ echo "--- this is private key --- (copy it)"
 echo ""
 if [[ -f $HOSTNAME.pem ]]
 then cat $HOSTNAME.pem
+mv $HOSTNAME.pem /home/$key_user/$HOSTNAME.pem
 elif [[ -f $pub.pem ]]
 then cat $pub.pem
+mv $pub.pem /home/$key_user/$pub.pem
 else echo "Can't find private key file...It should be here somewhere"
 fi
 echo ""
 echo "--- this is end of private key ---"
+echo -e "\nYour private key should be in home directory: /home/$key_user"
 echo "Once moved off of server, and tested working, you should delete it from this server"
 echo "permissions should be set to rw by owner"
 echo "***"
