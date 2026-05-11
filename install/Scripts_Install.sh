@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# v4.6.9
+# v4.7.9
 #
 # Command to download Raspberry Pi Scripts package
 #
