@@ -32,7 +32,6 @@ bin=/bin/
 gitDir="RPi-Scripts-Scripts"
 scriptsDir="RPI-Scripts"
 gitDL="Scripts.zip"
-gitLink=$(curl -sS https://api.github.com/repos/TROUBLESOM0/RPi-Scripts/releases/latest | grep "zipball_url" | cut -d '"' -f 4)
 DLscript="Scripts_Install.sh"
 motd_file="90-script"
 # #FOR TESTING ONLY# gitLink=~/Public/Scripts.zip
@@ -145,6 +144,40 @@ if type unzip &>/dev/null
 then :
 else
 echo "unzip installation failed. Try installing manually with sudo apt install unzip"
+exit 1
+fi
+break
+;;
+[nN][oO]|[nN])
+echo "Install Cancelled"
+break
+;;
+*)
+echo "Must enter [Y/n]"
+s
+exit 0
+;;
+esac
+done
+}
+#
+##########################
+###   ASK_INSTALLJQ   ###
+##########################
+ask_Installjq () {
+while true
+do
+read -r -p "Do You Want To Install jq? [Y/n]" ask_jq_input
+case $ask_jq_input in
+[yY][eE][sS]|[yY])
+echo "Installing jq"
+s
+sudo apt install jq -y -qq > /dev/null
+s
+if type jq &>/dev/null
+then :
+else
+echo "jq installation failed. Try installing manually with sudo apt install jq"
 exit 1
 fi
 break
@@ -482,6 +515,18 @@ echo "ERROR curl is not installed"
 ask_Installcurl
 echo "curl install complete"
 fi
+# Check if curl is installed
+if type jq &>/dev/null
+then : # continues script
+else
+echo "ERROR jq is not installed"
+ask_Installjq
+echo "jq install complete"
+fi
+
+echo -e "\nChecking if download link is valid...\n"
+gitLink=$(curl -sS https://api.github.com/repos/TROUBLESOM0/RPi-Scripts/releases/latest | jq -r '.zipball_url')
+
 #
 #############################################
 #              Begin Script                 #
