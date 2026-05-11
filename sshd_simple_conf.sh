@@ -6,6 +6,11 @@
 ### Get full sshd config with " sudo sshd -T 
 #
 #
+# Check script is running as root
+if [[ $( whoami ) != "root" ]]
+then echo -e "${Error}ERROR${Off} Must be run as sudo or root"
+exit 1
+fi
 # Is an SSH service registered?
 SERVICE_CHECK=$(systemctl list-unit-files | grep -i ssh | grep enabled)
 
@@ -22,7 +27,7 @@ if [ -n "$COMMAND_CHECK" ] || [ -n "$PORT_CHECK" ]; then
 else
     echo "No SSH server detected."
     echo "Installing OpenSSH Server."
-    sudo apt install openssh-server -y
+    apt install openssh-server -y
     echo ""
 fi
 
@@ -59,7 +64,7 @@ fi
 
 if [ -f $SSH_FILE ]
 then echo "Making backup $SSH_FILE.default"
-sudo cp $SSH_FILE $SSH_FILE.default
+cp $SSH_FILE $SSH_FILE.default
 else
 echo "Unable to locate sshd_config. Exiting"
 exit 1
