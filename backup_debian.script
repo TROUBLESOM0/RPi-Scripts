@@ -1,0 +1,96 @@
+#!/bin/bash
+#
+# Creates backup of Debian system
+#  Specifically on Raspberry Pi's running Raspberry Pi OS(Raspbian)
+
+# Fail instantly
+set -euo pipefail
+
+### VARIABLES
+Error='\033[1;31m'   # Bold red
+Off='\033[0m'
+USER=${SUDO_USER:-$USER}
+THIS_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
+HOSTNAME=$(hostname)
+HOSTIP=$(hostname -I)
+RELEASE=$(uname -r)
+OS_BIT=$(uname -m)
+OS_BIT_NUMBER=""
+OS_NAME=$(cat /etc/os-release | grep VERSION_CODENAME | cut -d '=' -f2)
+MACHINE_BUILD=$(cat /proc/device-tree/model && echo)
+RAM_USAGE=$(free -h)
+MANUAL_INSTALL_LIST=$(apt-mark showmanual | pr -t -3)
+COMPLETE_INSTALL_LIST=$(dpkg-query -W -f='${Status}\t${Package}\t${Version}\t${binary:Summary}\n' | grep '^install ok installed' | cut -f2- | column -t -s $'\t')
+
+
+
+DATE=$(date +"%m-%d-%Y")
+BKUP_FILE="$THIS_DIR/${HOSTNAME}_Bkup_${DATE}.txt"
+
+
+# Determine 32 or 64 bit
+if [[ $OS_BIT == "armv7l" || "armhf" ]]
+then echo "32bit-OS"
+OS_BIT_NUMBER="32bit"
+else echo "64bit-OS"
+OS_BIT_NUMBER="64bit"
+fi
+
+############################
+# Read directory to backup #
+############################
+read_dir () {
+READ_DIR_TARGET="${1:-.}"
+READ_FILE_DESTINATION="$BKUP_FILE"
+
+echo "Reading files in $READ_DIR_TARGET"
+if [[ -d $READ_DIR_TARGET ]]
+then :
+else echo -e "${Error}ERROR: Directory to read - \n  $READ_DIR_TARGET\nDoesn't exist ${Off}"
+exit 1
+fi
+
+for file in "$READ_DIR_TARGET"/*
+do [[ -f "$file" ]] || continue
+filename=$(basename "$file")
+# read contents
+echo "Appending contents of '$filename' to bkup"
+  {
+    echo -e "\n\n----- $filename -----\n"
+    cat "$file"
+    echo ""
+  } >> $READ_FILE_DESTINATION
+done
+}
+
+
+##################
+## BEGIN SCRIPT ##
+##################
+echo $USER
+echo $THIS_DIR
+# Check script is running as root
+if [[ $( whoami ) != "root" ]]
+then echo -e "${Error}ERROR: Must be run as sudo or root ${Off}"
+exit 1
+fi
+
+touch $BKUP_FILE
+{
+echo "Hostname: $HOSTNAME"
+echo "Ip Address: $HOSTIP"
+echo "$OS_BIT" + "$RELEASE"
+echo "$MACHINE_BUILD"
+echo "$OS_BIT_NUMBER"
+echo -e "\n\n--- RAM USAGE ---"
+echo "$RAM_USAGE"
+echo -e "\n\n"
+} >> $BKUP_FILE
+
+#bkup cronjobs
+#read_dir "/etc/cron.d"
+
+echo -e "\n\n--- LIST OF MANUALLY INSTALLED PACKAGES ---"
+echo "$MANUAL_INSTALL_LIST"
+echo -e "\n\n--- LIST OF ALL INSTALLED PACKAGES ---"
+echo "$COMPLETE_INSTALL_LIST"
