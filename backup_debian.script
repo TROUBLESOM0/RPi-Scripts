@@ -17,7 +17,7 @@ RELEASE=$(uname -r)
 OS_BIT=$(uname -m)
 OS_BIT_NUMBER=""
 OS_NAME=$(cat /etc/os-release | grep VERSION_CODENAME | cut -d '=' -f2)
-MACHINE_BUILD=$(cat /proc/device-tree/model && echo)
+MACHINE_BUILD=$(tr -d '\0' < /proc/device-tree/model)
 RAM_USAGE=$(free -h)
 MANUAL_INSTALL_LIST=$(apt-mark showmanual | pr -t -3)
 COMPLETE_INSTALL_LIST=$(dpkg-query -W -f='${Status}\t${Package}\t${Version}\t${binary:Summary}\n' | grep '^install ok installed' | cut -f2- | column -t -s $'\t')
