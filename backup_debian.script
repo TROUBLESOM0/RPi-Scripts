@@ -48,7 +48,8 @@ filename=$(basename "$file")
 # read contents
 echo "Appending contents of '$filename' to bkup"
   {
-    echo -e "\n\n----- $filename -----\n"
+    echo -e "\n\n-- $READ_DIR_TARGET --"
+    echo "----- $filename -----"
     cat "$file"
     echo ""
   } >> $READ_FILE_DESTINATION
@@ -90,7 +91,7 @@ exit 1
 fi
 
 echo "Backup file created: $BKUP_FILE"
-echo "Creating backup for:"
+echo -e "\nCreating backup for:"
 echo "- $HOSTNAME  $HOSTIP\n- $MACHINE_BUILD , $OS_BIT_NUMBER , $RELEASE"
 
 {
@@ -107,13 +108,31 @@ echo -e "\n\n"
 #bkup cronjobs
 #read_dir "/etc/cron.d"
 
-echo "Listing installed packages..."
+echo -e "\nListing installed packages..."
 {
 echo -e "\n\n--- LIST OF MANUALLY INSTALLED PACKAGES ---"
+echo        "-------------------------------------------"
 echo "$MANUAL_INSTALL_LIST"
 echo -e "\n\n--- LIST OF ALL INSTALLED PACKAGES ---"
+echo        "--------------------------------------"
 echo -e "$COMPLETE_INSTALL_LIST\n\n"
 } >> $BKUP_FILE
 
-echo "Copying cronjobs..."
+echo -e "\nCopying cronjobs..."
+echo -e "\n\nCRON JOBS" >> $BKUP_FILE
+echo "$USER - Cron List:" >> $BKUP_FILE
+echo crontab -u pi -l >> $BKUP_FILE
+echo -e "\nSUDO - Cron List:" >> $BKUP_FILE
+echo crontab -l >> $BKUP_FILE
 read_dir "/etc/cron.d"
+read_dir "/etc/cron.hourly"
+read_dir "/etc/cron.daily"
+read_dir "/etc/cron.weekly"
+read_dir "/etc/cron.monthly"
+read_dir "/etc/cron.yearly"
+
+
+
+echo -e "\nComplete."
+echo -e "Check\n $BKUP_FILE \nFor backup file"
+exit 0
