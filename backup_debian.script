@@ -78,7 +78,7 @@ fi
 read -r -p "Do you want to create a backup?" input
 if [[ "${input,,}" == "y" || "${input,,}" == "yes" ]]
 then :
-else return 1
+else exit 1
 fi
 
 touch $BKUP_FILE
