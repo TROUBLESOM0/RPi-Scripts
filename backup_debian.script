@@ -28,14 +28,6 @@ DATE=$(date +"%m-%d-%Y")
 BKUP_FILE="$THIS_DIR/${HOSTNAME}_Bkup_${DATE}.txt"
 
 
-# Determine 32 or 64 bit
-if [[ $OS_BIT == "armv7l" || "armhf" ]]
-then echo "32bit-OS"
-OS_BIT_NUMBER="32bit"
-else echo "64bit-OS"
-OS_BIT_NUMBER="64bit"
-fi
-
 ############################
 # Read directory to backup #
 ############################
@@ -67,12 +59,21 @@ done
 ##################
 ## BEGIN SCRIPT ##
 ##################
-echo $USER
-echo $THIS_DIR
 # Check script is running as root
 if [[ $( whoami ) != "root" ]]
 then echo -e "${Error}ERROR: Must be run as sudo or root ${Off}"
 exit 1
+fi
+
+echo "User: $USER"
+echo "Current Directory: $THIS_DIR"
+
+# Determine 32 or 64 bit
+if [[ $OS_BIT == "armv7l" || "armhf" ]]
+then echo "32bit-OS"
+OS_BIT_NUMBER="32bit"
+else echo "64bit-OS"
+OS_BIT_NUMBER="64bit"
 fi
 
 read -r -p "Do you want to create a backup?" input
