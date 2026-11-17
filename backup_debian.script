@@ -75,7 +75,23 @@ then echo -e "${Error}ERROR: Must be run as sudo or root ${Off}"
 exit 1
 fi
 
+read -r -p "Do you want to create a backup?" input
+if [[ "${input,,}" == "y" || "${input,,}" == "yes" ]]
+then :
+else return 1
+fi
+
 touch $BKUP_FILE
+if [[ -f $BKUP_FILE ]]
+then :
+else echo -e "${Error}ERROR: Unable to create backup file: $BKUP_FILE ${Off}"
+exit 1
+fi
+
+echo "Backup file created: $BKUP_FILE"
+echo "Creating backup for:"
+echo "- $HOSTNAME  $HOSTIP\n- $MACHINE_BUILD , $OS_BIT_NUMBER , $RELEASE"
+
 {
 echo "Hostname: $HOSTNAME"
 echo "Ip Address: $HOSTIP"
@@ -90,7 +106,13 @@ echo -e "\n\n"
 #bkup cronjobs
 #read_dir "/etc/cron.d"
 
+echo "Listing installed packages..."
+{
 echo -e "\n\n--- LIST OF MANUALLY INSTALLED PACKAGES ---"
 echo "$MANUAL_INSTALL_LIST"
 echo -e "\n\n--- LIST OF ALL INSTALLED PACKAGES ---"
-echo "$COMPLETE_INSTALL_LIST"
+echo -e "$COMPLETE_INSTALL_LIST\n\n"
+} >> $BKUP_FILE
+
+echo "Copying cronjobs..."
+read_dir "/etc/cron.d"
