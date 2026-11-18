@@ -263,6 +263,22 @@ cp -rp /etc/ssh/ssh_config.d "$BKUP/SSH/"
 fi
 
 
+####################
+##  APACHE/NGINX  ##
+####################
+mkdir -p "$BKUP/SERVERS"
+if [[ -d /etc/apache2 ]]
+then
+cp -rp /etc/apache2 "$BKUP/SERVERS"
+echo "Copied apache"
+fi
+if [[ -d /etc/nginx ]]
+then
+cp -rp /etc/nginx "$BKUP/SERVERS"
+echo "Copied nginx"
+fi
+
+
 ########################
 ##  HOME DIRECTORIES  ##
 ########################
