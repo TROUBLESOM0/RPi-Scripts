@@ -327,13 +327,13 @@ fi
 echo "Installing zip package"
 apt install zip -y
 echo -e "\ncompressing bkup\n"
-zip -r $ZIP_FILE $BKUP
+zip -r -qq $ZIP_FILE $BKUP
 
 
 ################
 ##  COMPLETE  ##
 ################
-rm -r $BKUP
+rm -r $BKUP_TEMP
 echo -e "\nComplete."
-echo -e "Check\n $BKUP_FILE \nFor backup file"
+echo -e "Check\n $ZIP_FILE \nFor backup file"
 exit 0
