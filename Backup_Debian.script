@@ -16,21 +16,24 @@ HOSTIP=$(hostname -I)
 RELEASE=$(uname -r)
 OS_BIT=$(uname -m)
 OS_BIT_NUMBER=""
-OS_NAME=$(cat /etc/os-release | grep VERSION_CODENAME | cut -d '=' -f2)
-MACHINE_BUILD=$(tr -d '\0' < /proc/device-tree/model)
+OS_NAME=$(cat /etc/os-release | grep VERSION_CODENAME | cut -d '=' -f2 | tr '[:lower:]' '[:upper:]')
+MACHINE_BUILD=""
 RAM_USAGE=$(free -h)
 MANUAL_INSTALL_LIST=$(apt-mark showmanual | pr -t -3)
 COMPLETE_INSTALL_LIST=$(dpkg-query -W -f='${Status}\t${Package}\t${Version}\t${binary:Summary}\n' | grep '^install ok installed' | cut -f2- | column -t -s $'\t')
 
-
-
 DATE=$(date +"%m-%d-%Y")
-BKUP_FILE="$THIS_DIR/${HOSTNAME}_Bkup_${DATE}.txt"
+BKUP="$THIS_DIR/${HOSTNAME}_${OS_NAME}-Bkup_${DATE}"
+BKUP_FILE="$BKUP/contents.txt"
 
+if [[ -f /proc/device-tree/model ]]; then
+MACHINE_BUILD=$(tr -d '\0' < /proc/device-tree/model)
+else MACHINE_BUILD=""
+fi
 
-############################
-# Read directory to backup #
-############################
+################################
+# Read contents of a directory #
+################################
 read_dir () {
 READ_DIR_TARGET="${1:-.}"
 READ_FILE_DESTINATION="$BKUP_FILE"
@@ -83,6 +86,10 @@ then :
 else exit 1
 fi
 
+##########################
+##  CREATE BACKUP FILE ###
+##########################
+mkdir $BKUP
 touch $BKUP_FILE
 if [[ -f $BKUP_FILE ]]
 then :
@@ -92,7 +99,7 @@ fi
 
 echo "Backup file created: $BKUP_FILE"
 echo -e "\nCreating backup for:"
-echo "- $HOSTNAME  $HOSTIP\n- $MACHINE_BUILD , $OS_BIT_NUMBER , $RELEASE"
+echo "- $HOSTNAME  $HOSTIP - $MACHINE_BUILD , $OS_BIT_NUMBER , $RELEASE"
 
 {
 echo "Hostname: $HOSTNAME"
@@ -105,18 +112,21 @@ echo "$RAM_USAGE"
 echo -e "\n\n"
 } >> $BKUP_FILE
 
-#bkup cronjobs
-#read_dir "/etc/cron.d"
+
+######################
+##  BACKUP CRONJOBS ##
+######################
+read_dir "/etc/cron.d"
 
 echo -e "\nListing installed packages..."
 {
 echo -e "\n\n--- LIST OF MANUALLY INSTALLED PACKAGES ---"
 echo        "-------------------------------------------"
 echo "$MANUAL_INSTALL_LIST"
-echo -e "\n\n--- LIST OF ALL INSTALLED PACKAGES ---"
-echo        "--------------------------------------"
-echo -e "$COMPLETE_INSTALL_LIST\n\n"
 } >> $BKUP_FILE
+
+echo $MANUAL_INSTALL_LIST > "$BKUP/MANUAL-APT-LIST.txt"
+echo $COMPLETE_INSTALL_LIST > "$BKUP/FULL-APT-LIST.txt"
 
 echo -e "\nCopying cronjobs..."
 echo -e "\n\nCRON JOBS" >> $BKUP_FILE
@@ -130,6 +140,62 @@ read_dir "/etc/cron.daily"
 read_dir "/etc/cron.weekly"
 read_dir "/etc/cron.monthly"
 read_dir "/etc/cron.yearly"
+
+
+##################
+##  BACKUP APT  ##
+##################
+if [[ -f /etc/apt/sources.list ]]
+then
+cp -rp /etc/apt/sources.list /etc/apt/sources.list.d "$BKUP/apt/" 2>/dev/null || true
+echo "Copied apt sources"
+else echo -e "${Error}ERROR: APT Sources Doesn't exist ${Off}"
+fi
+
+if [[ -d /etc/apt/trusted.gpg.d ]]
+then
+mkdir -p "$BKUP/apt-keyrings"
+cp -rp /etc/apt/trusted.gpg.d/* "$BKUP/apt-keyrings/" 2>/dev/null || true
+else echo -e "${Error}ERROR: APT trusted.gpg.d Doesn't exist ${Off}"
+fi
+
+if [[ -d /usr/share/keyrings ]]
+then
+mkdir -p "$BKUP/user-keyrings"
+cp -rp /usr/share/keyrings/* "$BKUP/user-keyrings/" 2>/dev/null || true
+else echo -e "${Error}ERROR: APT usr/share/keyrings Doesn't exist ${Off}"
+fi
+
+
+###################
+##  BACKUP MOTD  ##
+###################
+mkdir "$BKUP/MOTD"
+if [[ -f /etc/motd ]]
+then cp /etc/motd "$BKUP/MOTD/"
+echo "Copied MOTD"
+else "motd file not found"
+fi
+if [[ -d /etc/update-motd.d ]]
+then cp -rp /etc/update-motd.d/* "$BKUP/MOTD/"
+echo "Copied MOTD scripts"
+else "update-motd not found"
+fi
+
+
+####################
+##  BACKUP USERS  ##
+####################
+mkdir "$BKUP/USERS"
+if [[ -f /etc/passwd ]]
+then cp -p /etc/passwd "$BKUP/USERS/"
+echo "copied users"
+fi
+
+
+
+
+
 
 
 
