@@ -123,12 +123,12 @@ echo "$USER - Cron List:" >> $BKUP_FILE
 echo crontab -u pi -l >> $BKUP_FILE
 echo -e "\nSUDO - Cron List:" >> $BKUP_FILE
 echo crontab -l >> $BKUP_FILE
-cp -rp "/etc/cron.d" "$BKUP/CRONJOBS"
-cp -rp "/etc/cron.hourly" "$BKUP/CRONJOBS"
-cp -rp "/etc/cron.daily" "$BKUP/CRONJOBS"
-cp -rp "/etc/cron.weekly" "$BKUP/CRONJOBS"
-cp -rp "/etc/cron.monthly" "$BKUP/CRONJOBS"
-cp -rp "/etc/cron.yearly" "$BKUP/CRONJOBS"
+cp -rp "/etc/cron.d" "$BKUP/CRONJOBS" 2>/dev/null || true
+cp -rp "/etc/cron.hourly" "$BKUP/CRONJOBS" 2>/dev/null || true
+cp -rp "/etc/cron.daily" "$BKUP/CRONJOBS" 2>/dev/null || true
+cp -rp "/etc/cron.weekly" "$BKUP/CRONJOBS" 2>/dev/null || true
+cp -rp "/etc/cron.monthly" "$BKUP/CRONJOBS" 2>/dev/null || true
+cp -rp "/etc/cron.yearly" "$BKUP/CRONJOBS" 2>/dev/null || true
 
 
 ##################
