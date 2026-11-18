@@ -233,6 +233,17 @@ echo "Copied nginx"
 fi
 
 
+#################
+##  WEB FILES  ##
+#################
+if [[ -d /var/www/html ]]
+then mkdir -p "$BKUP/SERVERS/WEB-FILES"
+cp -rp /var/www/html/* "$BKUP/SERVERS/WEB-FILES/"
+echo "Copied www files"
+else :
+fi
+
+
 ###################
 ##  MODSECURITY  ##
 ###################
