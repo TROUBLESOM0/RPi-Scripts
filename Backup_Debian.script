@@ -33,52 +33,6 @@ MACHINE_BUILD=$(tr -d '\0' < /proc/device-tree/model)
 else MACHINE_BUILD=""
 fi
 
-################################
-# Read contents of a directory #
-################################
-read_dir () {
-  local READ_DIR_TARGET="${1:-.}"
-  local READ_FILE_DESTINATION="${2:-}"
-
-  echo "Reading files in $READ_DIR_TARGET"
-  if [[ -d $READ_DIR_TARGET ]]
-  then :
-  else
-    echo -e "${Error}ERROR: Directory to read - \n  $READ_DIR_TARGET\nDoesn't exist ${Off}"
-    exit 1
-  fi
-
-  # Ask for destination if empty
-  if [[ -z "$READ_FILE_DESTINATION" ]]
-  then
-    if [[ -n "$BKUP_FILE" ]]; then
-      read -p "Enter destination file [press Enter for default: $BKUP_FILE]: " READ_FILE_DESTINATION
-      READ_FILE_DESTINATION="${READ_FILE_DESTINATION:-$BKUP_FILE}"
-    else
-      read -p "Enter destination file path: " READ_FILE_DESTINATION
-    fi
-  fi
-
-  # Validate that a destination was provided
-  if [[ -z "$READ_FILE_DESTINATION" ]]
-  then
-    echo -e "${Error}ERROR: No destination file specified.${Off}"
-    exit 1
-  fi
-
-  for file in "$READ_DIR_TARGET"/*
-  do [[ -f "$file" ]] || continue
-  local filename=$(basename "$file")
-  # read contents
-  echo "Appending contents of '$filename' to $READ_FILE_DESTINATION"
-    {
-      echo -e "\n\n-- $READ_DIR_TARGET --"
-      echo "----- $filename -----"
-      cat "$file"
-      echo ""
-    } >> "$READ_FILE_DESTINATION"
-  done
-}
 
 
 ##################
