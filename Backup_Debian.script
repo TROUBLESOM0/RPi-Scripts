@@ -107,7 +107,7 @@ echo "   -/whisper/venv"
 ##  BACKUP CRONJOBS ##
 ######################
 mkdir -p "$BKUP/CRONJOBS"
-echo -e "\nListing installed packages..."
+echo -e "\nListing installed packages"
 {
 echo -e "\n\n--- LIST OF MANUALLY INSTALLED PACKAGES ---"
 echo        "-------------------------------------------"
@@ -116,8 +116,8 @@ echo "$MANUAL_INSTALL_LIST"
 
 echo $MANUAL_INSTALL_LIST > "$BKUP/MANUAL-APT-LIST.txt"
 echo $COMPLETE_INSTALL_LIST > "$BKUP/FULL-APT-LIST.txt"
+echo -e "Packages listed in contents.txt\n"
 
-echo -e "\nCopying cronjobs..."
 echo -e "\n\nCRON JOBS" >> $BKUP_FILE
 echo "$USER - Cron List:" >> $BKUP_FILE
 echo crontab -u pi -l >> $BKUP_FILE
@@ -129,6 +129,7 @@ cp -rp "/etc/cron.daily" "$BKUP/CRONJOBS" 2>/dev/null || true
 cp -rp "/etc/cron.weekly" "$BKUP/CRONJOBS" 2>/dev/null || true
 cp -rp "/etc/cron.monthly" "$BKUP/CRONJOBS" 2>/dev/null || true
 cp -rp "/etc/cron.yearly" "$BKUP/CRONJOBS" 2>/dev/null || true
+echo "Copied cronjobs"
 
 
 ##################
@@ -163,12 +164,12 @@ mkdir "$BKUP/MOTD"
 if [[ -f /etc/motd ]]
 then cp /etc/motd "$BKUP/MOTD/"
 echo "Copied MOTD"
-else "motd file not found"
+else :
 fi
 if [[ -d /etc/update-motd.d ]]
 then cp -rp /etc/update-motd.d/* "$BKUP/MOTD/"
 echo "Copied MOTD scripts"
-else "update-motd not found"
+else :
 fi
 
 
@@ -178,7 +179,7 @@ fi
 mkdir "$BKUP/USERS"
 if [[ -f /etc/passwd ]]
 then cp -p /etc/passwd "$BKUP/USERS/"
-echo "copied users"
+echo "Copied users in passwd"
 fi
 
 
@@ -187,6 +188,7 @@ fi
 #############
 if [[ -f /etc/samba/smb.conf ]]
 then cp -p /etc/samba/smb.conf "$BKUP/USERS/"
+echo "Copied smb.conf"
 fi
 
 
@@ -208,12 +210,13 @@ if [[ -f /etc/ssh/sshd_config ]]
 then mkdir "$BKUP/SSH"
 cp -rp /etc/ssh/ssh_config /etc/ssh/sshd_config "$BKUP/SSH/"
 echo "Copied sshd_config"
-else -e "${Error}ERROR: sshd Doesn't exist ${Off}"
+else echo -e "${Error}ERROR: sshd Doesn't exist ${Off}"
 fi
 if [[ -d /etc/ssh/sshd_config.d ]]
 then
 cp -rp /etc/ssh/sshd_config.d "$BKUP/SSH/"
 cp -rp /etc/ssh/ssh_config.d "$BKUP/SSH/"
+echo "Copied sshd_config.d folder"
 fi
 
 
