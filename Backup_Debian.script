@@ -286,7 +286,7 @@ for file in "${FILES[@]}"
 do
   if [ -f "$file" ]
   then
-  cp "$file" "$DEST_DIR/"
+  cp "$file" "$FILESDIR/"
   echo "  [SUCCESS] Copied: $file"
   else echo "  [WARNING] File not found or not a regular file: '$file' (skipping)" >&2
   fi
