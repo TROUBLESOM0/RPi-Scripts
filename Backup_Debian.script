@@ -233,14 +233,40 @@ echo "Copied nginx"
 fi
 
 
+###################
+##  MODSECURITY  ##
+###################
+if [[ -d /etc/modsecurity ]]
+then mkdir -p "$BKUP/SERVERS/MODSECURITY"
+cp -rp /etc/modsecurity "$BKUP/SERVERS/MODSECURITY"
+echo "Copied modsecurity"
+else :
+fi
+
+
+#####################
+##  ETC/SUDOERS.D  ##
+#####################
+if [[ -d /etc/sudoers.d ]]
+then mkdir -p "$BKUP/SUDOERS.D"
+cp -rp /etc/sudoers.d "$BKUP/SUDOERS.D"
+echo "Copied sudoers.d"
+else :
+fi
+
+
 #############
 ##  FILES  ##
 #############
 
 # /etc/nftables.conf
+# /etc/msmtprc
+# /etc/sudoers
 
 FILES=(
   "/etc/nftables.conf"
+  "/etc/msmtprc"
+  "/etc/sudoers"
 )
 
 mkdir -p "$BKUP/FILES"
