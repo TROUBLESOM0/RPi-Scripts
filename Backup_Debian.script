@@ -23,7 +23,7 @@ MANUAL_INSTALL_LIST=$(apt-mark showmanual | pr -t -3)
 COMPLETE_INSTALL_LIST=$(dpkg-query -W -f='${Status}\t${Package}\t${Version}\t${binary:Summary}\n' | grep '^install ok installed' | cut -f2- | column -t -s $'\t')
 
 DATE=$(date +"%m-%d-%Y")
-BKUP_TEMP="/usr/temp"
+BKUP_TEMP="/usr/bkup-temp"
 BKUP="$BKUP_TEMP/${HOSTNAME}_${OS_NAME}-Bkup_${DATE}"
 BKUP_FILE="$BKUP/contents.txt"
 ZIP_FILE="$THIS_DIR/${HOSTNAME}_${OS_NAME}-Bkup_${DATE}.zip"
