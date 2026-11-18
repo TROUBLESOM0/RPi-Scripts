@@ -273,6 +273,7 @@ zip -r $ZIP_FILE $BKUP
 ################
 ##  COMPLETE  ##
 ################
+rm -r $BKUP
 echo -e "\nComplete."
 echo -e "Check\n $BKUP_FILE \nFor backup file"
 exit 0
