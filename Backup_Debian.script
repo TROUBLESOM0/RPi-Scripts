@@ -233,6 +233,29 @@ echo "Copied nginx"
 fi
 
 
+#############
+##  FILES  ##
+#############
+
+# /etc/nftables.conf
+
+FILES=(
+  "/etc/nftables.conf"
+)
+
+mkdir -p "$BKUP/FILES"
+FILESDIR="$BKUP/FILES"
+for file in "${FILES[@]}"
+do
+  if [ -f "$file" ]
+  then
+  cp "$file" "$DEST_DIR/"
+  echo "  [SUCCESS] Copied: $file"
+  else echo "  [WARNING] File not found or not a regular file: '$file' (skipping)" >&2
+  fi
+done
+
+
 ###########
 ##  NUT  ##
 ###########
