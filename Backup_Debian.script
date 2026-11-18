@@ -23,8 +23,10 @@ MANUAL_INSTALL_LIST=$(apt-mark showmanual | pr -t -3)
 COMPLETE_INSTALL_LIST=$(dpkg-query -W -f='${Status}\t${Package}\t${Version}\t${binary:Summary}\n' | grep '^install ok installed' | cut -f2- | column -t -s $'\t')
 
 DATE=$(date +"%m-%d-%Y")
-BKUP="$THIS_DIR/${HOSTNAME}_${OS_NAME}-Bkup_${DATE}"
+BKUP_TEMP="/usr/temp"
+BKUP="$BKUP_TEMP/${HOSTNAME}_${OS_NAME}-Bkup_${DATE}"
 BKUP_FILE="$BKUP/contents.txt"
+ZIP_FILE="$THIS_DIR/${HOSTNAME}_${OS_NAME}-Bkup_${DATE}.zip"
 
 if [[ -f /proc/device-tree/model ]]; then
 MACHINE_BUILD=$(tr -d '\0' < /proc/device-tree/model)
@@ -35,28 +37,47 @@ fi
 # Read contents of a directory #
 ################################
 read_dir () {
-READ_DIR_TARGET="${1:-.}"
-READ_FILE_DESTINATION="$BKUP_FILE"
+  local READ_DIR_TARGET="${1:-.}"
+  local READ_FILE_DESTINATION="${2:-}"
 
-echo "Reading files in $READ_DIR_TARGET"
-if [[ -d $READ_DIR_TARGET ]]
-then :
-else echo -e "${Error}ERROR: Directory to read - \n  $READ_DIR_TARGET\nDoesn't exist ${Off}"
-exit 1
-fi
+  echo "Reading files in $READ_DIR_TARGET"
+  if [[ -d $READ_DIR_TARGET ]]
+  then :
+  else
+    echo -e "${Error}ERROR: Directory to read - \n  $READ_DIR_TARGET\nDoesn't exist ${Off}"
+    exit 1
+  fi
 
-for file in "$READ_DIR_TARGET"/*
-do [[ -f "$file" ]] || continue
-filename=$(basename "$file")
-# read contents
-echo "Appending contents of '$filename' to bkup"
-  {
-    echo -e "\n\n-- $READ_DIR_TARGET --"
-    echo "----- $filename -----"
-    cat "$file"
-    echo ""
-  } >> $READ_FILE_DESTINATION
-done
+  # Ask for destination if empty
+  if [[ -z "$READ_FILE_DESTINATION" ]]
+  then
+    if [[ -n "$BKUP_FILE" ]]; then
+      read -p "Enter destination file [press Enter for default: $BKUP_FILE]: " READ_FILE_DESTINATION
+      READ_FILE_DESTINATION="${READ_FILE_DESTINATION:-$BKUP_FILE}"
+    else
+      read -p "Enter destination file path: " READ_FILE_DESTINATION
+    fi
+  fi
+
+  # Validate that a destination was provided
+  if [[ -z "$READ_FILE_DESTINATION" ]]
+  then
+    echo -e "${Error}ERROR: No destination file specified.${Off}"
+    exit 1
+  fi
+
+  for file in "$READ_DIR_TARGET"/*
+  do [[ -f "$file" ]] || continue
+  local filename=$(basename "$file")
+  # read contents
+  echo "Appending contents of '$filename' to $READ_FILE_DESTINATION"
+    {
+      echo -e "\n\n-- $READ_DIR_TARGET --"
+      echo "----- $filename -----"
+      cat "$file"
+      echo ""
+    } >> "$READ_FILE_DESTINATION"
+  done
 }
 
 
@@ -89,7 +110,11 @@ fi
 ##########################
 ##  CREATE BACKUP FILE ###
 ##########################
-mkdir $BKUP
+if [[ -d $BKUP_TEMP ]]
+then rm -r $BKUP_TEMP
+fi
+mkdir -p $BKUP_TEMP
+mkdir -p $BKUP
 touch $BKUP_FILE
 if [[ -f $BKUP_FILE ]]
 then :
@@ -112,12 +137,22 @@ echo "$RAM_USAGE"
 echo -e "\n\n"
 } >> $BKUP_FILE
 
+echo "++++++++++++++++" >> $BKUP_FILE
+echo "+   EXCLUDED   +" >> $BKUP_FILE
+echo "++++++++++++++++" >> $BKUP_FILE
+{
+echo "- From Home Directory -"
+echo "   -/.cache"
+echo "   -/cache"
+echo "   -/go/pkg"
+echo "   -/whisper/venv"
+} >> $BKUP_FILE
+
 
 ######################
 ##  BACKUP CRONJOBS ##
 ######################
-read_dir "/etc/cron.d"
-
+mkdir -p "$BKUP/CRONJOBS"
 echo -e "\nListing installed packages..."
 {
 echo -e "\n\n--- LIST OF MANUALLY INSTALLED PACKAGES ---"
@@ -134,12 +169,12 @@ echo "$USER - Cron List:" >> $BKUP_FILE
 echo crontab -u pi -l >> $BKUP_FILE
 echo -e "\nSUDO - Cron List:" >> $BKUP_FILE
 echo crontab -l >> $BKUP_FILE
-read_dir "/etc/cron.d"
-read_dir "/etc/cron.hourly"
-read_dir "/etc/cron.daily"
-read_dir "/etc/cron.weekly"
-read_dir "/etc/cron.monthly"
-read_dir "/etc/cron.yearly"
+cp -rp "/etc/cron.d" "$BKUP/CRONJOBS"
+cp -rp "/etc/cron.hourly" "$BKUP/CRONJOBS"
+cp -rp "/etc/cron.daily" "$BKUP/CRONJOBS"
+cp -rp "/etc/cron.weekly" "$BKUP/CRONJOBS"
+cp -rp "/etc/cron.monthly" "$BKUP/CRONJOBS"
+cp -rp "/etc/cron.yearly" "$BKUP/CRONJOBS"
 
 
 ##################
@@ -193,12 +228,71 @@ echo "copied users"
 fi
 
 
+#############
+##  SAMBA  ##
+#############
+if [[ -f /etc/samba/smb.conf ]]
+then cp -p /etc/samba/smb.conf "$BKUP/USERS/"
+fi
 
 
+#######################
+##  SYSTEM SERVICES  ##
+#######################
+if [[ -d /etc/systemd/system ]]
+then mkdir "$BKUP/SERVICES"
+cp -rp /etc/systemd/system/* "$BKUP/SERVICES/"
+echo "Copied systemd services"
+else echo -e "${Error}ERROR: Systemd/Services Doesn't exist ${Off}"
+fi
 
 
+###########
+##  SSH  ##
+###########
+if [[ -f /etc/ssh/sshd_config ]]
+then mkdir "$BKUP/SSH"
+cp -rp /etc/ssh/ssh_config /etc/ssh/sshd_config "$BKUP/SSH/"
+echo "Copied sshd_config"
+else -e "${Error}ERROR: sshd Doesn't exist ${Off}"
+fi
+if [[ -d /etc/ssh/sshd_config.d ]]
+then
+cp -rp /etc/ssh/sshd_config.d "$BKUP/SSH/"
+cp -rp /etc/ssh/ssh_config.d "$BKUP/SSH/"
+fi
 
 
+########################
+##  HOME DIRECTORIES  ##
+########################
+if [[ -d /home ]]
+then
+mkdir "$BKUP/HOMES"
+echo "Copying home directories..."
+rsync -aAXHv \
+--exclude='**/.cache/' \
+--exclude='**/cache/' \
+--exclude='**/go/pkg/' \
+--exclude='**/whisper/venv/' \
+--info=progress2 "/home/" "$BKUP/HOMES/"
+else
+echo -e "${Error}ERROR: home directory Doesn't exist ${Off}"
+fi
+
+
+###########
+##  ZIP  ##
+###########
+echo "Installing zip package"
+apt install zip -y
+echo -e "\ncompressing bkup\n"
+zip -r $ZIP_FILE $BKUP
+
+
+################
+##  COMPLETE  ##
+################
 echo -e "\nComplete."
 echo -e "Check\n $BKUP_FILE \nFor backup file"
 exit 0
