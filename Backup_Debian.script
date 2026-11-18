@@ -279,6 +279,16 @@ echo "Copied nginx"
 fi
 
 
+###########
+##  NUT  ##
+###########
+if [[ -d /etc/nut ]]
+then
+mkdir -p "$BKUP/NUT"
+cp -rp /etc/nut "$BKUP/NUT"
+fi
+
+
 ########################
 ##  HOME DIRECTORIES  ##
 ########################
