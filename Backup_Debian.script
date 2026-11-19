@@ -258,6 +258,23 @@ echo "Copied nginx" && echo "Copied nginx" >> $BKUP_FILE
 fi
 
 
+###########
+##  SSL  ##
+###########
+if [[ -d /etc/ssl/private ]]
+then mkdir -p "$BKUP/SERVERS/SSL"
+cp -rp /etc/ssl/private "$BKUP/SERVERS/SSL/"
+echo "Copied private ssl files" && echo "Copied private ssl files" >> $BKUP_FILE
+else :
+fi
+if [[ -f /etc/ssl/openssl.cnf ]]
+then
+cp -rp /etc/ssl/openssl.cnf "$BKUP/SERVERS/SSL/"
+echo "Copied openssl.cnf" && echo "Copied openssl.cnf" >> $BKUP_FILE
+else :
+fi
+
+
 #################
 ##  WEB FILES  ##
 #################
@@ -286,7 +303,7 @@ fi
 if [[ -d /etc/fail2ban ]]
 then mkdir -p "$BKUP/FAIL2BAN"
 cp -rp /etc/fail2ban "$BKUP/FAIL2BAN"
-echo "Copied fail2ban && echo "Copied fail2ban" >> $BKUP_FILE"
+echo "Copied fail2ban" && echo "Copied fail2ban" >> $BKUP_FILE"
 else :
 fi
 
