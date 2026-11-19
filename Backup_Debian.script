@@ -118,11 +118,11 @@ echo $MANUAL_INSTALL_LIST > "$BKUP/MANUAL-APT-LIST.txt"
 echo $COMPLETE_INSTALL_LIST > "$BKUP/FULL-APT-LIST.txt"
 echo -e "Packages listed in contents.txt\n"
 
-echo -e "\n\nCRON JOBS" >> $BKUP_FILE
-echo "$USER - Cron List:" >> $BKUP_FILE
-echo crontab -u pi -l >> $BKUP_FILE
-echo -e "\nSUDO - Cron List:" >> $BKUP_FILE
-echo crontab -l >> $BKUP_FILE
+echo -e "\n\nCRON JOBS:\n" >> $BKUP_FILE
+echo -e "$USER - Cron List:" >> $BKUP_FILE
+crontab -u $USER -l >> $BKUP_FILE
+echo -e "\nroot - Cron List:" >> $BKUP_FILE
+crontab -u root -l >> $BKUP_FILE
 cp -rp "/etc/cron.d" "$BKUP/CRONJOBS" 2>/dev/null || true
 cp -rp "/etc/cron.hourly" "$BKUP/CRONJOBS" 2>/dev/null || true
 cp -rp "/etc/cron.daily" "$BKUP/CRONJOBS" 2>/dev/null || true
@@ -130,6 +130,7 @@ cp -rp "/etc/cron.weekly" "$BKUP/CRONJOBS" 2>/dev/null || true
 cp -rp "/etc/cron.monthly" "$BKUP/CRONJOBS" 2>/dev/null || true
 cp -rp "/etc/cron.yearly" "$BKUP/CRONJOBS" 2>/dev/null || true
 echo "Copied cronjobs"
+echo -e "\nCopied cronjobs" >> $BKUP_FILE
 
 
 ##################
@@ -138,7 +139,7 @@ echo "Copied cronjobs"
 if [[ -f /etc/apt/sources.list ]]
 then
 cp -rp /etc/apt/sources.list /etc/apt/sources.list.d "$BKUP/apt/" 2>/dev/null || true
-echo "Copied apt sources"
+echo "Copied apt sources" && echo "Copied apt sources" >> $BKUP_FILE
 else echo -e "${Error}ERROR: APT Sources Doesn't exist ${Off}"
 fi
 
@@ -146,6 +147,7 @@ if [[ -d /etc/apt/trusted.gpg.d ]]
 then
 mkdir -p "$BKUP/apt-keyrings"
 cp -rp /etc/apt/trusted.gpg.d/* "$BKUP/apt-keyrings/" 2>/dev/null || true
+echo "Copied apt-keyrings" && echo "Copied apt-keyrings" >> $BKUP_FILE
 else echo -e "${Error}ERROR: APT trusted.gpg.d Doesn't exist ${Off}"
 fi
 
@@ -153,6 +155,7 @@ if [[ -d /usr/share/keyrings ]]
 then
 mkdir -p "$BKUP/user-keyrings"
 cp -rp /usr/share/keyrings/* "$BKUP/user-keyrings/" 2>/dev/null || true
+echo "Copied user-keyrings" && echo "Copied user-keyrings" >> $BKUP_FILE
 else echo -e "${Error}ERROR: APT usr/share/keyrings Doesn't exist ${Off}"
 fi
 
@@ -163,12 +166,12 @@ fi
 mkdir "$BKUP/MOTD"
 if [[ -f /etc/motd ]]
 then cp /etc/motd "$BKUP/MOTD/"
-echo "Copied MOTD"
+echo "Copied MOTD" && echo "Copied MOTD" >> $BKUP_FILE
 else :
 fi
 if [[ -d /etc/update-motd.d ]]
 then cp -rp /etc/update-motd.d/* "$BKUP/MOTD/"
-echo "Copied MOTD scripts"
+echo "Copied MOTD scripts" && echo "Copied MOTD scripts" >> $BKUP_FILE
 else :
 fi
 
@@ -179,7 +182,7 @@ fi
 mkdir "$BKUP/USERS"
 if [[ -f /etc/passwd ]]
 then cp -p /etc/passwd "$BKUP/USERS/"
-echo "Copied users in passwd"
+echo "Copied users in passwd" && echo "Copied users in passwd" >> $BKUP_FILE
 fi
 
 
@@ -188,7 +191,7 @@ fi
 #############
 if [[ -f /etc/samba/smb.conf ]]
 then cp -p /etc/samba/smb.conf "$BKUP/USERS/"
-echo "Copied smb.conf"
+echo "Copied smb.conf" && echo "Copied smb.conf" >> $BKUP_FILE
 fi
 
 
@@ -198,7 +201,7 @@ fi
 if [[ -d /etc/systemd/system ]]
 then mkdir "$BKUP/SERVICES"
 cp -rp /etc/systemd/system/* "$BKUP/SERVICES/"
-echo "Copied systemd services"
+echo "Copied systemd services" && echo "Copied systemd services" >> $BKUP_FILE
 else echo -e "${Error}ERROR: Systemd/Services Doesn't exist ${Off}"
 fi
 
@@ -209,14 +212,14 @@ fi
 if [[ -f /etc/ssh/sshd_config ]]
 then mkdir "$BKUP/SSH"
 cp -rp /etc/ssh/ssh_config /etc/ssh/sshd_config "$BKUP/SSH/"
-echo "Copied sshd_config"
+echo "Copied sshd_config" && echo "Copied sshd_config" >> $BKUP_FILE
 else echo -e "${Error}ERROR: sshd Doesn't exist ${Off}"
 fi
 if [[ -d /etc/ssh/sshd_config.d ]]
 then
 cp -rp /etc/ssh/sshd_config.d "$BKUP/SSH/"
 cp -rp /etc/ssh/ssh_config.d "$BKUP/SSH/"
-echo "Copied sshd_config.d folder"
+echo "Copied sshd_config.d folder" && echo "Copied sshd_config.d" >> $BKUP_FILE
 fi
 
 
@@ -227,12 +230,12 @@ mkdir -p "$BKUP/SERVERS"
 if [[ -d /etc/apache2 ]]
 then
 cp -rp /etc/apache2 "$BKUP/SERVERS"
-echo "Copied apache"
+echo "Copied apache" && echo "Copied apache" >> $BKUP_FILE
 fi
 if [[ -d /etc/nginx ]]
 then
 cp -rp /etc/nginx "$BKUP/SERVERS"
-echo "Copied nginx"
+echo "Copied nginx" && echo "Copied nginx" >> $BKUP_FILE
 fi
 
 
@@ -242,7 +245,7 @@ fi
 if [[ -d /var/www/html ]]
 then mkdir -p "$BKUP/SERVERS/WEB-FILES"
 cp -rp /var/www/html/* "$BKUP/SERVERS/WEB-FILES/"
-echo "Copied www files"
+echo "Copied www files" && echo "Copied www files" >> $BKUP_FILE
 else :
 fi
 
@@ -253,7 +256,7 @@ fi
 if [[ -d /etc/modsecurity ]]
 then mkdir -p "$BKUP/SERVERS/MODSECURITY"
 cp -rp /etc/modsecurity "$BKUP/SERVERS/MODSECURITY"
-echo "Copied modsecurity"
+echo "Copied modsecurity" && echo "Copied modsecurity" >> $BKUP_FILE
 else :
 fi
 
@@ -264,7 +267,7 @@ fi
 if [[ -d /etc/fail2ban ]]
 then mkdir -p "$BKUP/FAIL2BAN"
 cp -rp /etc/fail2ban "$BKUP/FAIL2BAN"
-echo "Copied fail2ban"
+echo "Copied fail2ban && echo "Copied fail2ban" >> $BKUP_FILE"
 else :
 fi
 
@@ -275,7 +278,7 @@ fi
 if [[ -d /etc/sudoers.d ]]
 then mkdir -p "$BKUP/SUDOERS.D"
 cp -rp /etc/sudoers.d "$BKUP/SUDOERS.D"
-echo "Copied sudoers.d"
+echo "Copied sudoers.d" && echo "Copied sudoers.d" >> $BKUP_FILE
 else :
 fi
 
@@ -294,6 +297,8 @@ FILES=(
   "/etc/sudoers"
 )
 
+echo "" && echo "" >> $BKUP_FILE
+
 mkdir -p "$BKUP/FILES"
 FILESDIR="$BKUP/FILES"
 for file in "${FILES[@]}"
@@ -301,11 +306,12 @@ do
   if [ -f "$file" ]
   then
   cp "$file" "$FILESDIR/"
-  echo "  [SUCCESS] Copied: $file"
+  echo "  [SUCCESS] Copied: $file" && echo "Copied: $file" >> $BKUP_FILE
   else echo "  [WARNING] File not found or not a regular file: '$file' (skipping)" >&2
   fi
 done
 
+echo "" && echo "" >> $BKUP_FILE
 
 ###########
 ##  NUT  ##
@@ -314,6 +320,7 @@ if [[ -d /etc/nut ]]
 then
 mkdir -p "$BKUP/NUT"
 cp -rp /etc/nut "$BKUP/NUT"
+echo "Copied nut" && echo "Copied nut" >> $BKUP_FILE
 fi
 
 
@@ -323,7 +330,7 @@ fi
 if [[ -d /home ]]
 then
 mkdir "$BKUP/HOMES"
-echo "Copying home directories..."
+echo "Copying home directories..." && echo "Copying home directories" >> $BKUP_FILE
 rsync -aAXHv \
 --exclude='**/.cache/' \
 --exclude='**/cache/' \
@@ -348,6 +355,6 @@ zip -r -qq $ZIP_FILE $BKUP
 ##  COMPLETE  ##
 ################
 rm -r $BKUP_TEMP
-echo -e "\nComplete."
+echo -e "\nComplete." && echo -e "\nComplete." >> $BKUP_FILE
 echo -e "Check\n $ZIP_FILE \nFor backup file"
 exit 0
