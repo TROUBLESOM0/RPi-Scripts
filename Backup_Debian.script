@@ -350,6 +350,8 @@ else
 echo -e "${Error}ERROR: home directory Doesn't exist ${Off}"
 fi
 
+echo -e "\nComplete." >> $BKUP_FILE
+
 
 ###########
 ##  ZIP  ##
@@ -364,6 +366,6 @@ zip -r -qq $ZIP_FILE $BKUP
 ##  COMPLETE  ##
 ################
 rm -r $BKUP_TEMP
-echo -e "\nComplete." && echo -e "\nComplete." >> $BKUP_FILE
+echo -e "\nComplete."
 echo -e "Check\n $ZIP_FILE \nFor backup file"
 exit 0
