@@ -258,6 +258,17 @@ else :
 fi
 
 
+################
+##  FAIL2BAN  ##
+################
+if [[ -d /etc/fail2ban ]]
+then mkdir -p "$BKUP/FAIL2BAN"
+cp -rp /etc/fail2ban "$BKUP/FAIL2BAN"
+echo "Copied fail2ban"
+else :
+fi
+
+
 #####################
 ##  ETC/SUDOERS.D  ##
 #####################
