@@ -25,6 +25,8 @@ repeatDate=$(date "+%m-%d-%Y.%T")
 #
 #############################################
 ### variables for files/directories ###
+Error='\033[1;31m'   # Bold red
+Off='\033[0m'
 dir=`pwd`
 userHome=$(eval echo "~$SUDO_USER")
 scripts=$userHome/scripts
@@ -298,6 +300,7 @@ zip -qq -r $gitDL $gitDir/
 rm -r $gitDir
 #ask_Unzip
 else echo "Error downloading"
+exit 1
 fi
 break
 ;;
@@ -436,9 +439,9 @@ fi
 }
 #
 ##########################
-#      ask_Check-OS      #
+#      ask_Check_OS      #
 ##########################
-ask_Check-OS () {
+ask_Check_OS () {
 if [[ -f /etc/os-release ]]
 then :
 else
@@ -488,7 +491,7 @@ fi
 echo "Downloads Raspberry Pi Scripts zip into current folder : '$dir'"
 # Check script is running as root
 if [[ $( whoami ) != "root" ]]
-then echo -e "${Error}ERROR${Off} Must be run as sudo or root"
+then echo -e "${Error}ERROR: Must be run as sudo or root ${Off}"
 exit 1
 fi
 #
@@ -526,7 +529,11 @@ echo "jq install complete"
 fi
 
 echo -e "\nChecking if download link is valid...\n"
-gitLink=$(curl -sS $baseLink | jq -r '.zipball_url')
+gitLink=$(curl -fsSL "$baseLink" | jq -er '.zipball_url')
+if [[ -z "$gitLink" ]]; then
+    echo -e "${Error}ERROR: Unable to retrieve GitHub download URL. ${Off}"
+    exit 1
+fi
 
 #
 #############################################
@@ -540,7 +547,7 @@ ask_Replace
 ask_Unzip
 cp_Scripts
 install_Scripts
-else ask_Check-OS
+else ask_Check_OS
 ask_DL
 ask_Unzip
 cp_Scripts
