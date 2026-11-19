@@ -374,7 +374,7 @@ rsync -aAXHv \
 --exclude='**/cache/' \
 --exclude='**/go/pkg/' \
 --exclude='**/whisper/venv/' \
---exclude='**/Music/' \
+--exclude='**/Music' \
 --info=progress2 "/home/" "$BKUP/HOMES/"
 else
 echo -e "${Error}ERROR: home directory Doesn't exist ${Off}"
