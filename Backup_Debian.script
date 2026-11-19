@@ -48,7 +48,7 @@ fi
 if ! command -v rsync >/dev/null 2>&1
 then echo "Installing rsync...will remove once complete"
 echo "Installing RSYNC...will remove once complete" >> $BKUP_FILE
-apt install rsync -y -qq 2>/dev/null >/dev/null
+apt install rsync
 REMOVE_RSYNC=1
 fi
 sleep 1
