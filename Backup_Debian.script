@@ -303,7 +303,7 @@ fi
 if [[ -d /etc/fail2ban ]]
 then mkdir -p "$BKUP/FAIL2BAN"
 cp -rp /etc/fail2ban "$BKUP/FAIL2BAN"
-echo "Copied fail2ban" && echo "Copied fail2ban" >> $BKUP_FILE"
+echo "Copied fail2ban" && echo "Copied fail2ban" >> $BKUP_FILE
 else :
 fi
 
