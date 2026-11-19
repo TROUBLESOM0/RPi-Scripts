@@ -20,7 +20,7 @@ OS_NAME=$(cat /etc/os-release | grep VERSION_CODENAME | cut -d '=' -f2 | tr '[:l
 MACHINE_BUILD=""
 RAM_USAGE=$(free -h)
 MANUAL_INSTALL_LIST=$(apt-mark showmanual | pr -t -3)
-COMPLETE_INSTALL_LIST=$(dpkg-query -W -f='${Status}\t${Package}\t${Version}\t${binary:Summary}\n' | grep '^install ok installed' | cut -f2- | column -t -s $'\t')
+COMPLETE_INSTALL_LIST=$(dpkg-query -W -f='${Status}\t${Package}\t${Version}\t${binary:Summary}\n' | awk -F'\t' '$1 == "install ok installed" { printf "%-35s %-22s %s\n", $2, $3, $4 }')
 
 DATE=$(date +"%m-%d-%Y")
 BKUP_TEMP="/usr/bkup-temp"
