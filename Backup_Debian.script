@@ -44,15 +44,6 @@ then echo -e "${Error}ERROR: Must be run as sudo or root ${Off}"
 exit 1
 fi
 
-# Check for rsync, will install if missing, and delete once complete.
-if ! command -v rsync >/dev/null 2>&1
-then echo "Installing rsync...will remove once complete"
-echo "Installing RSYNC...will remove once complete" >> $BKUP_FILE
-apt install rsync
-REMOVE_RSYNC=1
-fi
-sleep 1
-
 echo "User: $USER"
 echo "Current Directory: $THIS_DIR"
 
@@ -88,6 +79,17 @@ fi
 echo "Backup file created: $BKUP_FILE"
 echo -e "\nCreating backup for:"
 echo "- $HOSTNAME  $HOSTIP - $MACHINE_BUILD , $OS_BIT_NUMBER , $RELEASE"
+
+
+# Check for rsync, will install if missing, and delete once complete.
+if ! command -v rsync >/dev/null 2>&1
+then echo "Installing rsync...will remove once complete"
+echo "Installing RSYNC...will remove once complete" >> $BKUP_FILE
+apt install rsync -y
+REMOVE_RSYNC=1
+fi
+sleep 1
+
 
 {
 echo "Hostname: $HOSTNAME"
