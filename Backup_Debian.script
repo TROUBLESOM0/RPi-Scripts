@@ -120,9 +120,17 @@ echo -e "Packages listed in contents.txt\n"
 
 echo -e "\n\nCRON JOBS:\n" >> $BKUP_FILE
 echo -e "$USER - Cron List:" >> $BKUP_FILE
-crontab -u $USER -l >> $BKUP_FILE
+if
+crontab -u $USER -l 2>/dev/null >> $BKUP_FILE
+then echo "Copied crontab for $USER"
+else echo "No crontab for $USER" && echo "No crontab for $USER" >> $BKUP_FILE
+fi
 echo -e "\nroot - Cron List:" >> $BKUP_FILE
-crontab -u root -l >> $BKUP_FILE
+if
+crontab -u root -l 2>/dev/null >> $BKUP_FILE
+then echo "Copied crontab for root"
+else echo "No crontab for root" && echo "No crontab for root" >> $BKUP_FILE
+fi
 cp -rp "/etc/cron.d" "$BKUP/CRONJOBS" 2>/dev/null || true
 cp -rp "/etc/cron.hourly" "$BKUP/CRONJOBS" 2>/dev/null || true
 cp -rp "/etc/cron.daily" "$BKUP/CRONJOBS" 2>/dev/null || true
