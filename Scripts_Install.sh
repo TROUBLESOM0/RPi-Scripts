@@ -29,6 +29,7 @@ dir=`pwd`
 userHome=$(eval echo "~$SUDO_USER")
 scripts=$userHome/scripts
 bin=/bin/
+baseLink="https://api.github.com/repos/TROUBLESOM0/RPi-Scripts/releases/latest"
 gitDir="RPi-Scripts-Scripts"
 scriptsDir="RPI-Scripts"
 gitDL="Scripts.zip"
@@ -525,7 +526,7 @@ echo "jq install complete"
 fi
 
 echo -e "\nChecking if download link is valid...\n"
-gitLink=$(curl -sS https://api.github.com/repos/TROUBLESOM0/RPi-Scripts/releases/latest | jq -r '.zipball_url')
+gitLink=$(curl -sS $baseLink | jq -r '.zipball_url')
 
 #
 #############################################
