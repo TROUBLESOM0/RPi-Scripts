@@ -306,6 +306,7 @@ FILES=(
 )
 
 echo "" && echo "" >> $BKUP_FILE
+echo "Specific Files:" >> $BKUP_FILE
 
 mkdir -p "$BKUP/FILES"
 FILESDIR="$BKUP/FILES"
