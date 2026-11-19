@@ -392,7 +392,7 @@ echo -e "\nComplete." >> $BKUP_FILE
 echo "Installing zip package"
 apt install zip -y
 echo -e "\ncompressing bkup\n"
-zip -r -qq $ZIP_FILE $BKUP
+(cd $BKUP && zip -r $ZIP_FILE .)
 
 
 ################
