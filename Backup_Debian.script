@@ -111,6 +111,7 @@ echo "   -/.cache"
 echo "   -/cache"
 echo "   -/go/pkg"
 echo "   -/whisper/venv"
+echo "   -/Music"
 } >> $BKUP_FILE
 
 
@@ -373,6 +374,7 @@ rsync -aAXHv \
 --exclude='**/cache/' \
 --exclude='**/go/pkg/' \
 --exclude='**/whisper/venv/' \
+--exclude='**/Music/' \
 --info=progress2 "/home/" "$BKUP/HOMES/"
 else
 echo -e "${Error}ERROR: home directory Doesn't exist ${Off}"
