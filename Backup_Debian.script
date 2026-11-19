@@ -44,6 +44,15 @@ then echo -e "${Error}ERROR: Must be run as sudo or root ${Off}"
 exit 1
 fi
 
+# Check for rsync, will install if missing, and delete once complete.
+if ! command -v rsync >/dev/null 2>&1
+then echo "Installing rsync...will remove once complete"
+echo "Installing RSYNC...will remove once complete" >> $BKUP_FILE
+apt update -q && apt install rsync -y -qq 2>/dev/null >/dev/null
+REMOVE_RSYNC=1
+fi
+sleep 1
+
 echo "User: $USER"
 echo "Current Directory: $THIS_DIR"
 
@@ -350,6 +359,11 @@ else
 echo -e "${Error}ERROR: home directory Doesn't exist ${Off}"
 fi
 
+
+if [[ "${REMOVE_RSYNC:-0}" -eq 1 ]]
+then echo "Removing rsync" && echo "Removing RSYNC" >> $BKUP_FILE
+apt remove rsync -y 
+fi
 echo -e "\nComplete." >> $BKUP_FILE
 
 
